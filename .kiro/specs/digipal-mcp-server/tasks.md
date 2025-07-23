@@ -132,7 +132,7 @@ print(processor.batch_decode(output_tokens, skip_special_tokens=True))
   - Write tests for speech processing accuracy and error handling
   - _Requirements: 5.1, 4.1_
 
-- [-] 8. Build DigiPal core engine orchestration
+- [x] 8. Build DigiPal core engine orchestration
   - Implement DigiPalCore class as central coordinator
   - Add pet creation logic with egg type attribute initialization
   - Create pet loading and state management functionality
