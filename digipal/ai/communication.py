@@ -14,6 +14,7 @@ import torch
 from ..core.models import DigiPal, Interaction, Command
 from ..core.enums import LifeStage, CommandType, InteractionResult
 from .language_model import LanguageModel
+from .speech_processor import SpeechProcessor, SpeechProcessingResult
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class AICommunication:
         Args:
             model_name: HuggingFace model identifier for Qwen3-0.6B
             quantization: Whether to use quantization for memory optimization
-            kyutai_config: Configuration for Kyutai speech processing (placeholder for now)
+            kyutai_config: Configuration for Kyutai speech processing
         """
         self.model_name = model_name
         self.quantization = quantization
@@ -47,33 +48,49 @@ class AICommunication:
         self.language_model = LanguageModel(model_name, quantization)
         self._model_loaded = False
         
+        # Initialize speech processor
+        speech_model_id = self.kyutai_config.get('model_id', 'kyutai/stt-2.6b-en_fr-trfs')
+        speech_device = self.kyutai_config.get('device', None)
+        self.speech_processor = SpeechProcessor(speech_model_id, speech_device)
+        self._speech_model_loaded = False
+        
         logger.info(f"AICommunication initialized with model: {model_name}")
+        logger.info(f"Speech processor initialized with model: {speech_model_id}")
         logger.info(f"Quantization enabled: {quantization}")
     
-    def process_speech(self, audio_data: bytes) -> str:
+    def process_speech(self, audio_data: bytes, sample_rate: Optional[int] = None) -> str:
         """
-        Process speech audio data and convert to text.
+        Process speech audio data and convert to text using Kyutai STT.
         
         Args:
             audio_data: Raw audio bytes from user input
+            sample_rate: Sample rate of the audio data (optional)
             
         Returns:
             Transcribed text from speech
-            
-        Note: This is a placeholder implementation. In the full version,
-        this would integrate with Kyutai speech-to-text processing.
         """
-        # Placeholder implementation
-        logger.info("Processing speech audio (placeholder)")
+        logger.info("Processing speech audio with Kyutai STT")
         
-        # In real implementation, this would:
-        # 1. Validate audio quality
-        # 2. Apply noise reduction
-        # 3. Use Kyutai model for speech-to-text
-        # 4. Handle recognition errors
-        
-        # For now, return a placeholder response
-        return "placeholder_speech_text"
+        try:
+            # Ensure speech model is loaded
+            if not self._speech_model_loaded:
+                if not self.load_speech_model():
+                    logger.error("Failed to load speech model, returning empty string")
+                    return ""
+            
+            # Process speech using Kyutai
+            result = self.speech_processor.process_speech(audio_data, sample_rate)
+            
+            if result.success:
+                logger.info(f"Speech processed successfully: '{result.transcribed_text}' (confidence: {result.confidence:.2f})")
+                return result.transcribed_text
+            else:
+                logger.warning(f"Speech processing failed: {result.error_message}")
+                return ""
+                
+        except Exception as e:
+            logger.error(f"Error in speech processing: {e}")
+            return ""
     
     def generate_response(self, input_text: str, pet: DigiPal) -> str:
         """
@@ -179,6 +196,40 @@ class AICommunication:
             self._model_loaded = False
             return False
     
+    def load_speech_model(self) -> bool:
+        """
+        Load the Kyutai speech-to-text model.
+        
+        Returns:
+            True if speech model loaded successfully, False otherwise
+        """
+        logger.info("Loading Kyutai speech-to-text model...")
+        
+        try:
+            success = self.speech_processor.load_model()
+            self._speech_model_loaded = success
+            
+            if success:
+                logger.info("Speech model loaded successfully")
+            else:
+                logger.warning("Failed to load speech model")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"Error loading speech model: {e}")
+            self._speech_model_loaded = False
+            return False
+    
+    def is_speech_model_loaded(self) -> bool:
+        """
+        Check if the speech model is loaded and ready.
+        
+        Returns:
+            True if speech model is loaded, False otherwise
+        """
+        return self._speech_model_loaded and self.speech_processor.is_model_loaded()
+    
     def is_model_loaded(self) -> bool:
         """
         Check if the language model is loaded and ready.
@@ -206,6 +257,21 @@ class AICommunication:
         
         return base_info
     
+    def get_speech_model_info(self) -> Dict[str, Any]:
+        """
+        Get information about the loaded speech model.
+        
+        Returns:
+            Dictionary with speech model information
+        """
+        if self.speech_processor:
+            return self.speech_processor.get_model_info()
+        else:
+            return {
+                'model_id': self.kyutai_config.get('model_id', 'kyutai/stt-2.6b-en_fr-trfs'),
+                'loaded': False
+            }
+    
     def unload_model(self) -> None:
         """
         Unload the language model to free memory.
@@ -225,6 +291,23 @@ class AICommunication:
                 torch.cuda.empty_cache()
             
             logger.info("Language model unloaded")
+    
+    def unload_speech_model(self) -> None:
+        """
+        Unload the speech model to free memory.
+        """
+        if self.speech_processor:
+            self.speech_processor.unload_model()
+            self._speech_model_loaded = False
+            logger.info("Speech model unloaded")
+    
+    def unload_all_models(self) -> None:
+        """
+        Unload both language and speech models to free memory.
+        """
+        self.unload_model()
+        self.unload_speech_model()
+        logger.info("All models unloaded")
 
 
 class CommandInterpreter:

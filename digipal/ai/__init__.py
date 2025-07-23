@@ -8,10 +8,20 @@ from .communication import (
     ResponseGenerator,
     ConversationMemoryManager
 )
+from .speech_processor import (
+    SpeechProcessor,
+    AudioValidator,
+    SpeechProcessingResult,
+    AudioValidationResult
+)
 
 __all__ = [
     'AICommunication',
     'CommandInterpreter', 
     'ResponseGenerator',
-    'ConversationMemoryManager'
+    'ConversationMemoryManager',
+    'SpeechProcessor',
+    'AudioValidator',
+    'SpeechProcessingResult',
+    'AudioValidationResult'
 ]
