@@ -67,6 +67,111 @@ DigiPal is a sophisticated digital pet application that combines modern AI techn
 - **Persistent Storage**: SQLite-based data persistence with backup systems
 - **Background Processing**: Automatic time-based updates and evolution monitoring
 
+## 🎛️ DigiPal Core Engine
+
+The `DigiPalCore` class serves as the central orchestrator for all DigiPal functionality, providing a unified interface for pet management, interaction processing, and real-time updates.
+
+### Key Components
+
+#### PetState
+Represents the current state of a DigiPal for external systems:
+- **Attributes**: All pet statistics (HP, MP, Offense, Defense, Speed, Brains, etc.)
+- **Status**: Age, last interaction, evolution readiness, attention needs
+- **Derived Metrics**: Status summary, needs assessment, evolution eligibility
+
+#### InteractionProcessor
+Handles user interactions through the AI communication layer:
+- **Text Processing**: Natural language interpretation and response generation
+- **Speech Processing**: Audio-to-text conversion with Kyutai integration
+- **Command Effects**: Automatic application of care actions based on interpreted commands
+- **Special Handling**: Egg hatching triggers and lifecycle events
+
+### Core Engine API
+
+#### Pet Management
+```python
+# Create new DigiPal
+pet = core.create_new_pet(EggType.RED, user_id="user123", name="MyPal")
+
+# Load existing pet
+pet = core.load_existing_pet(user_id="user123")
+
+# Get current pet state
+state = core.get_pet_state(user_id="user123")
+```
+
+#### Interaction Processing
+```python
+# Process text interaction
+success, interaction = core.process_interaction(user_id, "Let's train!")
+
+# Process speech interaction
+success, interaction = core.process_speech_interaction(user_id, audio_data)
+
+# Apply direct care action
+success, interaction = core.apply_care_action(user_id, "strength_training")
+```
+
+#### Evolution Management
+```python
+# Manual evolution trigger
+success, result = core.trigger_evolution(user_id, force=False)
+
+# Check evolution eligibility
+eligible, next_stage, requirements = evolution_controller.check_evolution_eligibility(pet)
+```
+
+#### Background Processing
+```python
+# Start automatic updates
+core.start_background_updates()
+
+# Manual state update
+core.update_pet_state(user_id, force_save=True)
+
+# Stop background processing
+core.stop_background_updates()
+```
+
+#### Statistics and Analytics
+```python
+# Get comprehensive pet statistics
+stats = core.get_pet_statistics(user_id)
+
+# Get available care actions
+actions = core.get_care_actions(user_id)
+```
+
+### Real-Time Features
+
+#### Automatic Updates
+- **Time-Based Decay**: Energy and happiness naturally decrease over time
+- **Evolution Monitoring**: Automatic progression through life stages
+- **Death Handling**: End-of-life processing with inheritance preparation
+- **Background Thread**: Non-blocking updates every 60 seconds
+
+#### State Management
+- **Active Pet Cache**: In-memory storage for frequently accessed pets
+- **Lazy Loading**: Pets loaded from storage only when needed
+- **Automatic Persistence**: Changes saved to database automatically
+- **Memory Optimization**: Efficient caching with cleanup on shutdown
+
+#### Event Handling
+- **Egg Hatching**: First interaction triggers evolution to baby stage
+- **Evolution Events**: Automatic attribute bonuses and command learning
+- **Death Events**: Generational inheritance DNA creation
+- **Care Mistakes**: Automatic tracking of poor care decisions
+
+### Integration Points
+
+The DigiPalCore integrates seamlessly with:
+- **Storage Manager**: Persistent data operations
+- **AI Communication**: Natural language and speech processing
+- **Attribute Engine**: Care mechanics and attribute management
+- **Evolution Controller**: Lifecycle and inheritance management
+
+This architecture provides a robust foundation for both the Gradio web interface and MCP server implementations, ensuring consistent behavior across all interaction methods.
+
 ## 🏗️ Project Structure
 
 ```
