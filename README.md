@@ -11,8 +11,29 @@ DigiPal is a sophisticated digital pet application that combines modern AI techn
 - **Egg Selection**: Choose from three egg types (Red, Blue, Green) with unique attribute bonuses
 - **Life Stages**: Watch your DigiPal evolve through 7 life stages: Egg → Baby → Child → Teen → Young Adult → Adult → Elderly
 - **Attribute System**: Digimon World 1-inspired attributes including HP, MP, Offense, Defense, Speed, and Brains
-- **Care Mechanics**: Train, feed, praise, scold, and rest to influence your pet's development
+- **Care Mechanics**: Comprehensive training, feeding, and care system with 13+ different actions
 - **Generational Inheritance**: Pass traits to new generations when your DigiPal reaches the end of its lifecycle
+
+#### 🏋️ Training Actions
+- **Strength Training**: Increases Offense (+3), HP (+2), reduces Weight (-1)
+- **Defense Training**: Increases Defense (+3), HP (+2), reduces Weight (-1)  
+- **Speed Training**: Increases Speed (+3), reduces Weight (-2)
+- **Brain Training**: Increases Brains (+3), MP (+2)
+- **Endurance Training**: Increases HP (+4), Defense (+2), reduces Weight (-2)
+- **Agility Training**: Increases Speed (+4), Offense (+1), reduces Weight (-3)
+
+#### 🍽️ Feeding Actions
+- **Meat**: Increases Weight (+2), HP (+1), Offense (+1), Happiness (+5)
+- **Fish**: Increases Weight (+1), Brains (+1), MP (+1), Happiness (+3)
+- **Vegetables**: Increases Weight (+1), Defense (+1), Happiness (+2)
+- **Protein Shake**: Increases Weight (+1), Offense (+2), HP (+1), Happiness (+1)
+- **Energy Drink**: Restores Energy (+5), increases Speed (+1), MP (+1), Happiness (+3)
+
+#### 💝 Care Actions
+- **Praise**: Increases Happiness (+10), reduces Discipline (-2)
+- **Scold**: Reduces Happiness (-8), increases Discipline (+5)
+- **Rest**: Restores Energy (+30), increases Happiness (+3)
+- **Play**: Increases Happiness (+8), reduces Weight (-1), costs Energy (-8)
 
 ### AI-Powered Interaction
 - **Natural Language Communication**: Powered by Qwen3-0.6B for contextual conversations
