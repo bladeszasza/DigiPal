@@ -61,7 +61,7 @@ class TestDigiPal(unittest.TestCase):
         
         # Test lower bound clamping
         self.digipal.set_attribute(AttributeType.HP, -50)
-        self.assertEqual(self.digipal.hp, 0)
+        self.assertEqual(self.digipal.hp, 1)
         
         # Test happiness bounds (0-100)
         self.digipal.set_attribute(AttributeType.HAPPINESS, 150)

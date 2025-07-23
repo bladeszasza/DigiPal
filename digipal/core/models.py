@@ -108,7 +108,7 @@ class DigiPal:
         """Set attribute value with bounds checking."""
         # Define attribute bounds
         bounds = {
-            AttributeType.HP: (0, 999),
+            AttributeType.HP: (1, 999),
             AttributeType.MP: (0, 999),
             AttributeType.OFFENSE: (0, 999),
             AttributeType.DEFENSE: (0, 999),
