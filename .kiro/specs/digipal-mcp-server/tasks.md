@@ -93,7 +93,7 @@ print("content:", content)
   - Write integration tests for model responses and context handling
   - _Requirements: 5.2, 5.3, 11.2_
 
-- [ ] 7. Add Kyutai speech processing integration
+- [x] 7. Add Kyutai speech processing integration
   - Implement SpeechProcessor class with Kyutai kyutai/stt-2.6b-en_fr-trfs integration (Transformers support Starting with transformers >= 4.53.0 and above, you can now run Kyutai STT natively! 👉 Check it out here: kyutai/stt-1b-en_fr-trfs)
   ```
 import torch

@@ -143,12 +143,16 @@ python -m pytest tests/ -v
 ```
 
 Current test coverage includes:
-- DigiPal model initialization and attribute management
-- Egg type attribute bonuses
-- Attribute bounds checking and modification
-- Command understanding by life stage
-- Serialization/deserialization
-- Interaction, Command, and CareAction models
+- **Core Models**: DigiPal model initialization and attribute management
+- **Egg Types**: Attribute bonuses and initialization behavior
+- **Attribute System**: Bounds checking, modification, and validation
+- **Life Stages**: Command understanding progression and evolution mechanics
+- **Data Persistence**: Serialization/deserialization and storage operations
+- **AI Integration**: Language model integration and response generation
+- **Care Mechanics**: Training, feeding, and care action effects
+- **Evolution System**: Life stage progression and inheritance mechanics
+
+The test suite includes comprehensive unit tests with proper mocking for external dependencies like the Qwen3-0.6B language model, ensuring reliable testing without requiring actual model downloads.
 
 ## 🎯 Hackathon Category: Games & Entertainment
 
