@@ -59,6 +59,15 @@ DigiPal is a sophisticated digital pet application that combines modern AI techn
 - **Contextual Responses**: Life stage-specific response templates with personality-based selection
 - **Conversation Memory**: Automatic interaction tracking with personality trait evolution
 
+### Visual Generation System
+- **FLUX.1-dev Integration**: Professional image generation using state-of-the-art diffusion models
+- **Dynamic Visualization**: Images automatically update as your DigiPal evolves through life stages
+- **Attribute-Based Appearance**: Pet appearance reflects current stats (offense, defense, happiness, etc.)
+- **Egg Type Specialization**: Visual traits match elemental affinities (fire, water, earth)
+- **Intelligent Caching**: Generated images cached to optimize performance and reduce API calls
+- **Fallback System**: Graceful degradation with placeholder images when generation fails
+- **Professional Prompts**: Sophisticated prompt engineering for consistent, high-quality results
+
 ### Technical Integration
 - **DigiPal Core Engine**: Central orchestrator managing all pet operations and real-time updates
 - **MCP Server**: Full Model Context Protocol compliance for AI system integration
@@ -172,6 +181,128 @@ The DigiPalCore integrates seamlessly with:
 
 This architecture provides a robust foundation for both the Gradio web interface and MCP server implementations, ensuring consistent behavior across all interaction methods.
 
+## 🎨 Image Generation System
+
+The `ImageGenerator` class provides sophisticated visual representation for DigiPals using the FLUX.1-dev diffusion model, creating dynamic images that reflect each pet's unique characteristics and evolution.
+
+### Key Features
+
+#### Professional Prompt Engineering
+- **Life Stage Templates**: Specialized prompts for each evolution stage (egg, baby, child, teen, young adult, adult, elderly)
+- **Egg Type Specialization**: Elemental themes (fire/red, water/blue, earth/green) with appropriate colors and environments
+- **Attribute Integration**: Pet stats influence visual appearance (high offense = fierce features, high defense = armored look)
+- **Personality Reflection**: Happiness and other traits affect facial expressions and poses
+
+#### Intelligent Caching System
+- **MD5-Based Keys**: Generated images cached using prompt and parameter hashes
+- **Performance Optimization**: Avoids redundant generation for identical configurations
+- **Cache Management**: Automatic cleanup of old cached images (configurable age limit)
+- **Storage Efficiency**: Organized cache directory structure with metadata tracking
+
+#### Robust Fallback System
+- **Graceful Degradation**: Automatic fallback to placeholder images when generation fails
+- **Staged Fallbacks**: Life stage and egg type specific placeholders → generic placeholder → simple colored rectangles
+- **Error Handling**: Comprehensive exception handling with detailed logging
+- **Offline Support**: System remains functional without internet connectivity
+
+### Image Generation API
+
+#### Basic Generation
+```python
+# Initialize image generator
+generator = ImageGenerator(
+    model_name="black-forest-labs/FLUX.1-dev",
+    cache_dir="demo_assets/images",
+    fallback_dir="demo_assets/images/fallbacks"
+)
+
+# Generate image for DigiPal
+image_path = generator.generate_image(digipal, force_regenerate=False)
+
+# Update image after evolution
+new_image_path = generator.update_image_for_evolution(digipal)
+```
+
+#### Advanced Configuration
+```python
+# Custom generation parameters
+generator.generation_params = {
+    "height": 1024,
+    "width": 1024,
+    "guidance_scale": 3.5,
+    "num_inference_steps": 50,
+    "max_sequence_length": 512
+}
+
+# Generate professional prompt
+prompt = generator.generate_prompt(digipal)
+
+# Cache management
+generator.cleanup_cache(max_age_days=30)
+cache_info = generator.get_cache_info()
+```
+
+### Prompt Template System
+
+#### Life Stage Characteristics
+Each life stage has specific visual traits:
+- **Egg**: Mystical egg with glowing patterns and magical runes
+- **Baby**: Small cute creature with big eyes and soft features
+- **Child**: Young creature with curious eyes and energetic poses
+- **Teen**: Adolescent with developing strength and confident stance
+- **Young Adult**: Athletic build with determined expression at full power
+- **Adult**: Mature, powerful creature with commanding presence
+- **Elderly**: Ancient wise creature with dignified, mystical aura
+
+#### Egg Type Specializations
+Visual themes based on elemental affinities:
+- **Red (Fire)**: Fierce, energetic, blazing aura with volcanic environments
+- **Blue (Water)**: Calm, protective, flowing aura with aquatic environments  
+- **Green (Earth)**: Sturdy, wise, natural aura with forest environments
+
+#### Attribute-Based Modifiers
+Pet statistics influence visual appearance:
+- **High Offense (>50)**: Fierce expression, sharp features
+- **High Defense (>50)**: Armored appearance, protective stance
+- **High Speed (>50)**: Sleek, agile build
+- **High Brains (>50)**: Intelligent eyes, wise demeanor
+- **High Happiness (>70)**: Happy, cheerful expression
+- **Low Happiness (<30)**: Sad, tired expression
+
+### Technical Implementation
+
+#### Model Integration
+- **FLUX.1-dev**: State-of-the-art diffusion model for high-quality image generation
+- **CPU Offloading**: Memory-efficient model loading with automatic VRAM management
+- **Consistent Seeds**: Deterministic generation based on DigiPal ID for reproducible results
+- **Torch Integration**: Optimized PyTorch backend with proper device management
+
+#### File Management
+- **Organized Structure**: Separate directories for cache, fallbacks, and user assets
+- **Path Resolution**: Robust path handling across different operating systems
+- **Asset Tracking**: Integration with storage manager for persistent image references
+- **Cleanup Utilities**: Automated maintenance of cache directories
+
+#### Error Handling
+- **Graceful Failures**: System continues functioning even when image generation fails
+- **Detailed Logging**: Comprehensive error reporting for debugging and monitoring
+- **Dependency Checks**: Proper handling of missing dependencies (diffusers, torch, PIL)
+- **Resource Management**: Automatic cleanup of GPU memory and file handles
+
+### Integration with Core Systems
+
+#### DigiPal Core Engine
+- **Automatic Updates**: Images regenerated when pets evolve to new life stages
+- **State Synchronization**: Image paths stored in DigiPal model for persistence
+- **Background Processing**: Image generation can be triggered by evolution events
+
+#### Storage Manager
+- **Asset Management**: Generated images stored and tracked in user asset directories
+- **Backup Integration**: Image references included in backup and restore operations
+- **Database Storage**: Image paths and generation prompts persisted in DigiPal records
+
+This visual system enhances the DigiPal experience by providing dynamic, personalized imagery that evolves with each pet's unique journey and characteristics.
+
 ## 🏗️ Project Structure
 
 ```
@@ -188,7 +319,8 @@ digipal/
 │   ├── __init__.py
 │   ├── communication.py    # AI communication orchestration
 │   ├── language_model.py   # Qwen3-0.6B integration
-│   └── speech_processor.py # Kyutai speech recognition
+│   ├── speech_processor.py # Kyutai speech recognition
+│   └── image_generator.py  # FLUX.1-dev image generation system
 ├── mcp/                    # MCP server implementation
 │   └── __init__.py
 ├── storage/                # Data persistence layer
@@ -212,7 +344,7 @@ tests/                      # Comprehensive test suite
 
 ## 🚀 Current Implementation Status
 
-### ✅ Completed (Tasks 1-8)
+### ✅ Completed (Tasks 1-9)
 - **Core Data Models**: Complete DigiPal model with all attributes and lifecycle properties
 - **Enum System**: EggType, LifeStage, AttributeType, and other constants
 - **Serialization**: Full JSON serialization/deserialization support
@@ -223,11 +355,11 @@ tests/                      # Comprehensive test suite
 - **Generational Inheritance**: DNA-based attribute passing between generations
 - **AI Communication Layer**: Complete Qwen3-0.6B and Kyutai integration with contextual responses
 - **DigiPal Core Engine**: Central orchestrator with real-time updates and background processing
+- **Image Generation System**: FLUX.1-dev integration with intelligent caching and fallback systems
 - **Unit Tests**: Comprehensive test coverage for all implemented components
 
 ### 🔄 In Progress
 Following the [implementation roadmap](.kiro/specs/digipal-mcp-server/tasks.md), the next phases include:
-- Image generation system for pet visualization
 - Complete Gradio web interface implementation
 - MCP server development and integration
 - Production deployment and optimization
