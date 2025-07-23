@@ -31,7 +31,7 @@
   - Write tests for all evolution paths and inheritance mechanics
   - _Requirements: 6.1, 6.2, 6.4, 9.1, 9.2, 9.3_
 
-- [ ] 5. Implement AI communication layer foundation
+- [x] 5. Implement AI communication layer foundation
   - Create AICommunication class structure with placeholder methods
   - Implement CommandInterpreter for parsing basic commands by life stage
   - Add conversation memory system with interaction history tracking
@@ -65,7 +65,7 @@
   - _Requirements: 2.1, 3.1, 3.2, 3.3, 3.4, 3.5, 4.2, 4.3_
 
 - [ ] 9. Create image generation system for pet visualization
-  - Implement image generation integration using Stable Diffusion or similar
+  - Implement image generation integration using model : black-forest-labs/FLUX.1-dev
   - Create professional prompts for each life stage with attribute modifiers
   - Add image caching and storage management
   - Implement fallback system with default images for generation failures
