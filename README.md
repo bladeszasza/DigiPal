@@ -35,6 +35,21 @@ DigiPal is a sophisticated digital pet application that combines modern AI techn
 - **Rest**: Restores Energy (+30), increases Happiness (+3)
 - **Play**: Increases Happiness (+8), reduces Weight (-1), costs Energy (-8)
 
+#### 🦋 Evolution System
+- **Time-Based Evolution**: Automatic progression through life stages based on age
+- **Requirement-Based Evolution**: Meet specific attribute, care, and happiness thresholds
+- **Stage Progression**: Egg (30min) → Baby (1 day) → Child (3 days) → Teen (5 days) → Young Adult (7 days) → Adult (10 days) → Elderly (3 days)
+- **Evolution Bonuses**: Each stage grants significant attribute increases and new command understanding
+- **Egg Type Specialization**: Red eggs gain offense bonuses, Blue eggs gain defense/MP bonuses, Green eggs gain HP bonuses
+- **Care Quality Impact**: Better care leads to easier evolution and stronger attribute gains
+
+#### 🧬 Generational Inheritance
+- **DNA System**: Parent attributes and care quality determine offspring bonuses
+- **Inheritance Rates**: Perfect care (25%), Excellent (20%), Good (15%), Fair (10%), Poor (5%)
+- **Attribute Passing**: High-performing parents pass stat bonuses to next generation
+- **Randomization**: Small random variations prevent identical offspring
+- **Generation Tracking**: Each DigiPal knows its generation number and lineage
+
 ### AI-Powered Interaction
 - **Natural Language Communication**: Powered by Qwen3-0.6B for contextual conversations
 - **Speech Recognition**: Kyutai integration for voice-based interaction
@@ -55,7 +70,9 @@ digipal/
 ├── core/                    # Core game logic and data models
 │   ├── __init__.py
 │   ├── models.py           # DigiPal, Interaction, Command data models
-│   └── enums.py            # EggType, LifeStage, AttributeType enums
+│   ├── enums.py            # EggType, LifeStage, AttributeType enums
+│   ├── attribute_engine.py # Care mechanics and attribute management
+│   └── evolution_controller.py # Evolution system and generational inheritance
 ├── ai/                     # AI communication layer
 │   └── __init__.py
 ├── mcp/                    # MCP server implementation
@@ -81,21 +98,23 @@ tests/                      # Comprehensive test suite
 
 ## 🚀 Current Implementation Status
 
-### ✅ Completed (Tasks 1-3)
+### ✅ Completed (Tasks 1-4)
 - **Core Data Models**: Complete DigiPal model with all attributes and lifecycle properties
 - **Enum System**: EggType, LifeStage, AttributeType, and other constants
 - **Serialization**: Full JSON serialization/deserialization support
 - **Storage Layer**: SQLite database with full CRUD operations, backup/recovery system
 - **Attribute Engine**: Complete Digimon World 1-inspired care mechanics with bounds checking
 - **Care Actions**: Full training, feeding, and care action system
+- **Evolution System**: Complete lifecycle management with time-based and requirement-based evolution
+- **Generational Inheritance**: DNA-based attribute passing between generations
 - **Unit Tests**: Comprehensive test coverage for all implemented components
 
 ### 🔄 In Progress
 Following the [implementation roadmap](.kiro/specs/digipal-mcp-server/tasks.md), the next phases include:
-- Evolution and lifecycle management system
 - AI communication layer foundation
 - Qwen3-0.6B and Kyutai integration
 - DigiPal core engine orchestration
+- Image generation system for pet visualization
 
 ## 📋 Requirements
 
