@@ -455,11 +455,11 @@ class TestAICommunication:
         """Test AI communication with custom configuration."""
         custom_config = {"test_param": "test_value"}
         ai_comm = AICommunication(
-            model_path="/path/to/model",
+            model_name="custom/model",
             kyutai_config=custom_config
         )
         
-        assert ai_comm.model_path == "/path/to/model"
+        assert ai_comm.model_name == "custom/model"
         assert ai_comm.kyutai_config == custom_config
 
 

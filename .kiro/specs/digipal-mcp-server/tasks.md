@@ -39,8 +39,54 @@
   - Write tests for command interpretation and memory management
   - _Requirements: 5.2, 5.4, 11.1, 11.2_
 
-- [ ] 6. Integrate Qwen3-0.6B model for natural language processing
-  - Set up Qwen3-0.6B model loading and initialization
+- [-] 6. Integrate Qwen3-0.6B model for natural language processing
+```
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model_name = "Qwen/Qwen3-0.6B"
+
+# load the tokenizer and the model
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype="auto",
+    device_map="auto"
+)
+
+# prepare the model input
+prompt = "Give me a short introduction to large language model."
+messages = [
+    {"role": "user", "content": prompt}
+]
+text = tokenizer.apply_chat_template(
+    messages,
+    tokenize=False,
+    add_generation_prompt=True,
+    enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
+)
+model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+
+# conduct text completion
+generated_ids = model.generate(
+    **model_inputs,
+    max_new_tokens=32768
+)
+output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
+
+# parsing thinking content
+try:
+    # rindex finding 151668 (</think>)
+    index = len(output_ids) - output_ids[::-1].index(151668)
+except ValueError:
+    index = 0
+
+thinking_content = tokenizer.decode(output_ids[:index], skip_special_tokens=True).strip("\n")
+content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+
+print("thinking content:", thinking_content)
+print("content:", content)
+```
+  - Set up Qwen/Qwen3-0.6B model loading and initialization
   - Implement LanguageModel class with context-aware response generation
   - Add model quantization for memory optimization
   - Create prompt templates that incorporate pet context and personality
@@ -48,7 +94,38 @@
   - _Requirements: 5.2, 5.3, 11.2_
 
 - [ ] 7. Add Kyutai speech processing integration
-  - Implement SpeechProcessor class with Kyutai integration (Transformers support Starting with transformers >= 4.53.0 and above, you can now run Kyutai STT natively! 👉 Check it out here: kyutai/stt-1b-en_fr-trfs)
+  - Implement SpeechProcessor class with Kyutai kyutai/stt-2.6b-en_fr-trfs integration (Transformers support Starting with transformers >= 4.53.0 and above, you can now run Kyutai STT natively! 👉 Check it out here: kyutai/stt-1b-en_fr-trfs)
+  ```
+import torch
+from datasets import load_dataset, Audio
+from transformers import KyutaiSpeechToTextProcessor, KyutaiSpeechToTextForConditionalGeneration
+
+# 1. load the model and the processor
+torch_device = "cuda" if torch.cuda.is_available() else "cpu"
+model_id = "kyutai/stt-2.6b-en_fr-trfs"
+
+processor = KyutaiSpeechToTextProcessor.from_pretrained(model_id)
+model = KyutaiSpeechToTextForConditionalGeneration.from_pretrained(model_id, device_map=torch_device, torch_dtype="auto")
+
+# 2. load audio samples
+ds = load_dataset(
+    "hf-internal-testing/librispeech_asr_dummy", "clean", split="validation"
+)
+ds = ds.cast_column("audio", Audio(sampling_rate=24000))
+
+# 3. prepare the model inputs
+inputs = processor(
+    ds[0]["audio"]["array"],
+)
+inputs.to(torch_device)
+
+# 4. infer the model
+output_tokens = model.generate(**inputs)
+
+# 5. decode the generated tokens
+print(processor.batch_decode(output_tokens, skip_special_tokens=True))
+
+  ```
   - Add audio input validation and preprocessing
   - Create speech-to-text pipeline with error handling
   - Implement audio quality checks and noise reduction

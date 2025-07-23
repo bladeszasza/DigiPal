@@ -63,7 +63,7 @@ graph TB
 - **Backend**: Python with asyncio for concurrent operations
 - **AI Models**: 
   - Qwen3-0.6B Qwen/Qwen3-0.6B for natural language communication
-  - Kyutai kyutai/stt-1b-en_fr for speech-to-text processing
+  - Kyutai kyutai/stt-2.6b-en_fr-trfs for speech-to-text processing
   - Stable Diffusion or similar black-forest-labs/FLUX.1-dev for 2D image generation
 - **Storage**: SQLite for persistence with JSON for complex data structures
 - **MCP Integration**: Python MCP SDK for server implementation
