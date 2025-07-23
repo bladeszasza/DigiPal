@@ -40,7 +40,9 @@ digipal/
 ├── mcp/                    # MCP server implementation
 │   └── __init__.py
 ├── storage/                # Data persistence layer
-│   └── __init__.py
+│   ├── __init__.py
+│   ├── database.py         # SQLite schema and connection management
+│   └── storage_manager.py  # High-level storage operations
 └── ui/                     # Gradio interface components
     └── __init__.py
 
