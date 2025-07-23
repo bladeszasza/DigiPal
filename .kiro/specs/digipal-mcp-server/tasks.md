@@ -132,7 +132,7 @@ print(processor.batch_decode(output_tokens, skip_special_tokens=True))
   - Write tests for speech processing accuracy and error handling
   - _Requirements: 5.1, 4.1_
 
-- [ ] 8. Build DigiPal core engine orchestration
+- [-] 8. Build DigiPal core engine orchestration
   - Implement DigiPalCore class as central coordinator
   - Add pet creation logic with egg type attribute initialization
   - Create pet loading and state management functionality
@@ -142,7 +142,30 @@ print(processor.batch_decode(output_tokens, skip_special_tokens=True))
   - _Requirements: 2.1, 3.1, 3.2, 3.3, 3.4, 3.5, 4.2, 4.3_
 
 - [ ] 9. Create image generation system for pet visualization
-  - Implement image generation integration using model : black-forest-labs/FLUX.1-dev
+  - Implement image generation integration using model : 
+  ```
+  pip install -U diffusers
+  ```
+  ```
+  import torch
+from diffusers import FluxPipeline
+
+pipe = FluxPipeline.from_pretrained("black-forest-labs/FLUX.1-dev", torch_dtype=torch.bfloat16)
+pipe.enable_model_cpu_offload() #save some VRAM by offloading the model to CPU. Remove this if you have enough GPU power
+
+prompt = "a cat like digimon who is touched by the power of the sun, it is in rookie stage, aaa rendering, high quality"
+image = pipe(
+    prompt,
+    height=1024,
+    width=1024,
+    guidance_scale=3.5,
+    num_inference_steps=50,
+    max_sequence_length=512,
+    generator=torch.Generator("cpu").manual_seed(0)
+).images[0]
+image.save("flux-dev.png")
+
+  ```
   - Create professional prompts for each life stage with attribute modifiers
   - Add image caching and storage management
   - Implement fallback system with default images for generation failures

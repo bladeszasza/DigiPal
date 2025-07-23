@@ -152,7 +152,7 @@ Current test coverage includes:
 - **Care Mechanics**: Training, feeding, and care action effects
 - **Evolution System**: Life stage progression and inheritance mechanics
 
-The test suite includes comprehensive unit tests with proper mocking for external dependencies like the Qwen3-0.6B language model, ensuring reliable testing without requiring actual model downloads.
+The test suite includes comprehensive unit tests with proper mocking for external dependencies like the Qwen3-0.6B language model and Kyutai speech processor, ensuring reliable testing without requiring actual model downloads. Tests include robust edge case handling and confidence threshold validation for speech processing components.
 
 ## 🎯 Hackathon Category: Games & Entertainment
 
