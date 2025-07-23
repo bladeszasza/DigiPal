@@ -39,7 +39,7 @@
   - Write tests for command interpretation and memory management
   - _Requirements: 5.2, 5.4, 11.1, 11.2_
 
-- [-] 6. Integrate Qwen3-0.6B model for natural language processing
+- [x] 6. Integrate Qwen3-0.6B model for natural language processing
 ```
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
