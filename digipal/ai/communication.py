@@ -9,9 +9,11 @@ import re
 from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
 import logging
+import torch
 
 from ..core.models import DigiPal, Interaction, Command
 from ..core.enums import LifeStage, CommandType, InteractionResult
+from .language_model import LanguageModel
 
 
 logger = logging.getLogger(__name__)
@@ -23,21 +25,30 @@ class AICommunication:
     language model interactions, and conversation management.
     """
     
-    def __init__(self, model_path: Optional[str] = None, kyutai_config: Optional[Dict] = None):
+    def __init__(self, model_name: str = "Qwen/Qwen3-0.6B", quantization: bool = True, kyutai_config: Optional[Dict] = None):
         """
         Initialize AI communication system.
         
         Args:
-            model_path: Path to Qwen3-0.6B model (placeholder for now)
+            model_name: HuggingFace model identifier for Qwen3-0.6B
+            quantization: Whether to use quantization for memory optimization
             kyutai_config: Configuration for Kyutai speech processing (placeholder for now)
         """
-        self.model_path = model_path
+        self.model_name = model_name
+        self.quantization = quantization
         self.kyutai_config = kyutai_config or {}
+        
+        # Initialize components
         self.command_interpreter = CommandInterpreter()
         self.response_generator = ResponseGenerator()
         self.memory_manager = ConversationMemoryManager()
         
-        logger.info("AICommunication initialized")
+        # Initialize language model
+        self.language_model = LanguageModel(model_name, quantization)
+        self._model_loaded = False
+        
+        logger.info(f"AICommunication initialized with model: {model_name}")
+        logger.info(f"Quantization enabled: {quantization}")
     
     def process_speech(self, audio_data: bytes) -> str:
         """
@@ -66,7 +77,7 @@ class AICommunication:
     
     def generate_response(self, input_text: str, pet: DigiPal) -> str:
         """
-        Generate contextual response using language model.
+        Generate contextual response using Qwen3-0.6B language model.
         
         Args:
             input_text: User input text
@@ -74,14 +85,19 @@ class AICommunication:
             
         Returns:
             Generated response text
-            
-        Note: This is a placeholder implementation. In the full version,
-        this would use Qwen3-0.6B for natural language generation.
         """
         logger.info(f"Generating response for input: {input_text}")
         
-        # Use response generator to create contextual response
-        return self.response_generator.generate_response(input_text, pet)
+        # Ensure model is loaded
+        if not self._model_loaded:
+            self.load_model()
+        
+        # Use language model if available, otherwise fallback to template responses
+        if self.language_model.is_loaded():
+            return self.language_model.generate_response(input_text, pet)
+        else:
+            logger.warning("Language model not available, using fallback response generator")
+            return self.response_generator.generate_response(input_text, pet)
     
     def interpret_command(self, text: str, pet: DigiPal) -> Command:
         """
@@ -137,6 +153,78 @@ class AICommunication:
             pet: DigiPal instance to update
         """
         self.memory_manager.add_interaction(interaction, pet)
+    
+    def load_model(self) -> bool:
+        """
+        Load the Qwen3-0.6B language model.
+        
+        Returns:
+            True if model loaded successfully, False otherwise
+        """
+        logger.info("Loading Qwen3-0.6B language model...")
+        
+        try:
+            success = self.language_model.load_model()
+            self._model_loaded = success
+            
+            if success:
+                logger.info("Language model loaded successfully")
+            else:
+                logger.warning("Failed to load language model, will use fallback responses")
+            
+            return success
+            
+        except Exception as e:
+            logger.error(f"Error loading language model: {e}")
+            self._model_loaded = False
+            return False
+    
+    def is_model_loaded(self) -> bool:
+        """
+        Check if the language model is loaded and ready.
+        
+        Returns:
+            True if model is loaded, False otherwise
+        """
+        return self._model_loaded and self.language_model.is_loaded()
+    
+    def get_model_info(self) -> Dict[str, Any]:
+        """
+        Get information about the loaded language model.
+        
+        Returns:
+            Dictionary with model information
+        """
+        base_info = {
+            'model_name': self.model_name,
+            'quantization': self.quantization,
+            'loaded': self.is_model_loaded()
+        }
+        
+        if self.language_model:
+            base_info.update(self.language_model.get_model_info())
+        
+        return base_info
+    
+    def unload_model(self) -> None:
+        """
+        Unload the language model to free memory.
+        """
+        if self.language_model:
+            # Clear model references to free memory
+            self.language_model.model = None
+            self.language_model.tokenizer = None
+            self._model_loaded = False
+            
+            # Force garbage collection
+            import gc
+            gc.collect()
+            
+            # Clear CUDA cache if available
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            
+            logger.info("Language model unloaded")
 
 
 class CommandInterpreter:
