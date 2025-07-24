@@ -265,7 +265,15 @@ class MCPServer:
     
     async def _handle_get_pet_status(self, arguments: Dict[str, Any]) -> CallToolResult:
         """Handle get_pet_status tool call."""
-        user_id = arguments["user_id"]
+        user_id = arguments.get("user_id")
+        if not user_id:
+            return CallToolResult(
+                content=[TextContent(
+                    type="text",
+                    text="Error: user_id is required for get_pet_status"
+                )],
+                isError=True
+            )
         
         pet_state = self.digipal_core.get_pet_state(user_id)
         if not pet_state:
@@ -362,7 +370,7 @@ class MCPServer:
         
         # Convert egg type string to enum
         try:
-            egg_type = EggType(egg_type_str.upper())
+            egg_type = EggType(egg_type_str.lower())
         except ValueError:
             return CallToolResult(
                 content=[TextContent(
@@ -474,7 +482,7 @@ class MCPServer:
         text = f"DigiPal Status Report\n"
         text += f"=====================\n"
         text += f"Name: {status_dict.get('name', 'Unknown')}\n"
-        text += f"Life Stage: {basic.get('life_stage', 'Unknown')}\n"
+        text += f"Life Stage: {status_dict.get('life_stage', basic.get('life_stage', 'Unknown'))}\n"
         text += f"Generation: {basic.get('generation', 0)}\n"
         text += f"Age: {status.get('age_hours', 0):.1f} hours\n"
         text += f"Status: {status.get('status_summary', 'Unknown')}\n"

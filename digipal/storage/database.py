@@ -228,8 +228,20 @@ class DatabaseConnection:
         if not Path(self.db_path).exists():
             DatabaseSchema.create_database(self.db_path)
         else:
-            # Check if migration is needed
-            DatabaseSchema.migrate_database(self.db_path)
+            # Check if database has required tables
+            try:
+                with sqlite3.connect(self.db_path) as conn:
+                    cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='digipals'")
+                    if not cursor.fetchone():
+                        # Database exists but doesn't have required tables, create them
+                        DatabaseSchema.create_database(self.db_path)
+                    else:
+                        # Check if migration is needed
+                        DatabaseSchema.migrate_database(self.db_path)
+            except Exception as e:
+                logger.error(f"Error checking database structure: {e}")
+                # Recreate database if there's an error
+                DatabaseSchema.create_database(self.db_path)
     
     def get_connection(self) -> sqlite3.Connection:
         """Get a database connection with proper configuration."""
