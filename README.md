@@ -387,7 +387,9 @@ Run the test suite to validate core functionality:
 python -m pytest tests/ -v
 ```
 
-Current test coverage includes:
+### Test Coverage
+
+#### Core System Tests
 - **Core Models**: DigiPal model initialization and attribute management
 - **Egg Types**: Attribute bonuses and initialization behavior
 - **Attribute System**: Bounds checking, modification, and validation
@@ -397,7 +399,69 @@ Current test coverage includes:
 - **Care Mechanics**: Training, feeding, and care action effects
 - **Evolution System**: Life stage progression and inheritance mechanics
 
-The test suite includes comprehensive unit tests with proper mocking for external dependencies like the Qwen3-0.6B language model and Kyutai speech processor, ensuring reliable testing without requiring actual model downloads. Tests include robust edge case handling and confidence threshold validation for speech processing components.
+#### Authentication System Tests
+- **Unit Tests**: Individual component testing for AuthManager, SessionManager, and auth models
+- **Integration Tests**: Complete authentication workflows from login to logout
+- **Performance Tests**: Concurrent authentication and session validation benchmarks
+- **Error Handling**: Comprehensive error scenario testing and recovery validation
+
+#### Authentication Test Scenarios
+The authentication integration tests cover:
+
+**Online Authentication Flow**:
+- HuggingFace API integration with token validation
+- Session creation and persistence across manager instances
+- Profile refresh and session extension
+- Proper logout and session invalidation
+
+**Offline Authentication Flow**:
+- Development mode authentication with deterministic user creation
+- Offline session persistence and validation
+- Cross-instance session recovery
+- Extended session management for offline development
+
+**Network Resilience**:
+- Automatic fallback from online to offline mode during network issues
+- Cached session recovery after network failures
+- Graceful degradation with maintained functionality
+
+**Multi-User Support**:
+- Concurrent authentication of multiple users
+- Independent session management and validation
+- Selective logout with other sessions remaining active
+- Session cleanup and maintenance
+
+**Performance Benchmarks**:
+- 50+ concurrent authentications in under 5 seconds
+- Session validation at 25+ operations per second
+- Memory-efficient session caching and persistence
+
+**Error Scenarios**:
+- Invalid token handling (too short, malformed)
+- Non-existent user and session management
+- Database connection failures and recovery
+- Session expiration and automatic cleanup
+
+### Running Specific Test Suites
+
+```bash
+# Run all tests
+python -m pytest tests/ -v
+
+# Run only authentication tests
+python -m pytest tests/test_auth_*.py -v
+
+# Run integration tests specifically
+python -m pytest tests/test_auth_integration.py -v
+
+# Run with performance output
+python -m pytest tests/test_auth_integration.py::TestAuthenticationPerformance -v -s
+
+# Run core system tests
+python -m pytest tests/test_models.py tests/test_digipal_core.py -v
+```
+
+The test suite includes comprehensive unit and integration tests with proper mocking for external dependencies like the Qwen3-0.6B language model and Kyutai speech processor, ensuring reliable testing without requiring actual model downloads. Tests include robust edge case handling, performance benchmarks, and confidence threshold validation for all system components.
 
 ## 🎯 Hackathon Category: Games & Entertainment
 
