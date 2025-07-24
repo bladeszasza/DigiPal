@@ -11,7 +11,10 @@ from typing import Dict, List, Optional, Any, Tuple
 
 from ..core.models import DigiPal, Interaction, CareAction
 from ..core.enums import EggType, LifeStage, CareActionType, InteractionResult
+from ..core.exceptions import StorageError, RecoveryError
+from ..core.error_handler import with_error_handling, with_retry, RetryConfig
 from .database import DatabaseConnection
+from .backup_recovery import BackupRecoveryManager, BackupConfig
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,22 @@ class StorageManager:
         # Create subdirectories for assets
         (self.assets_path / "images").mkdir(exist_ok=True)
         (self.assets_path / "backups").mkdir(exist_ok=True)
+        
+        # Initialize backup and recovery manager
+        backup_config = BackupConfig(
+            backup_interval_hours=6,
+            max_backups=10,
+            verify_backups=True,
+            backup_on_critical_operations=True
+        )
+        self.backup_manager = BackupRecoveryManager(
+            db_path, 
+            str(self.assets_path / "backups"), 
+            backup_config
+        )
+        
+        # Start automatic backups
+        self.backup_manager.start_automatic_backups()
         
         logger.info(f"StorageManager initialized with db: {db_path}, assets: {assets_path}")
     
@@ -110,20 +129,33 @@ class StorageManager:
             return False
     
     # DigiPal CRUD Operations
+    @with_error_handling(fallback_value=False, context={'operation': 'save_pet'})
+    @with_retry(RetryConfig(max_attempts=3, retry_on=[StorageError]))
     def save_pet(self, pet: DigiPal) -> bool:
         """Save or update a DigiPal to the database."""
         try:
+            # Create pre-operation backup for critical pet data changes
+            backup_id = self.backup_manager.create_pre_operation_backup(
+                "save_pet", 
+                {"pet_id": pet.id, "user_id": pet.user_id}
+            )
+            
             # Check if pet exists
             existing = self.get_pet(pet.id)
             
             if existing:
-                return self._update_pet(pet)
+                result = self._update_pet(pet)
             else:
-                return self._insert_pet(pet)
+                result = self._insert_pet(pet)
+            
+            if not result:
+                raise StorageError(f"Failed to save pet {pet.id}")
+            
+            return result
                 
         except Exception as e:
             logger.error(f"Failed to save pet {pet.id}: {e}")
-            return False
+            raise StorageError(f"Pet save operation failed: {str(e)}")
     
     def _insert_pet(self, pet: DigiPal) -> bool:
         """Insert a new DigiPal record."""

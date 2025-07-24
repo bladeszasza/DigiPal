@@ -14,6 +14,9 @@ from datetime import datetime
 
 from ..core.models import DigiPal, Interaction
 from ..core.enums import LifeStage
+from ..core.exceptions import AIModelError, NetworkError
+from ..core.error_handler import with_error_handling, with_retry, RetryConfig
+from .graceful_degradation import with_ai_fallback, ai_service_manager
 
 
 logger = logging.getLogger(__name__)
@@ -45,6 +48,8 @@ class LanguageModel:
         logger.info(f"Device: {self.device}")
         logger.info(f"Quantization: {quantization}")
     
+    @with_error_handling(fallback_value=False, context={'operation': 'model_loading'})
+    @with_retry(RetryConfig(max_attempts=3, retry_on=[NetworkError, ConnectionError]))
     def load_model(self) -> bool:
         """
         Load the Qwen3-0.6B model and tokenizer.
@@ -81,10 +86,12 @@ class LanguageModel:
             logger.info("Model loaded successfully")
             return True
             
+        except (ConnectionError, TimeoutError) as e:
+            raise NetworkError(f"Network error loading model: {str(e)}")
         except Exception as e:
-            logger.error(f"Failed to load model: {e}")
-            return False
+            raise AIModelError(f"Failed to load model: {str(e)}")
     
+    @with_ai_fallback("language_model")
     def generate_response(self, user_input: str, pet: DigiPal, max_tokens: int = 150) -> str:
         """
         Generate contextual response using Qwen3-0.6B model.
@@ -99,7 +106,7 @@ class LanguageModel:
         """
         if not self.model or not self.tokenizer:
             logger.warning("Model not loaded, using fallback response")
-            return self._fallback_response(user_input, pet)
+            raise AIModelError("Language model not loaded")
         
         try:
             # Create context-aware prompt
@@ -148,9 +155,11 @@ class LanguageModel:
             logger.debug(f"Generated response: {response}")
             return response
             
+        except torch.cuda.OutOfMemoryError as e:
+            raise AIModelError(f"GPU memory error: {str(e)}")
         except Exception as e:
             logger.error(f"Error generating response: {e}")
-            return self._fallback_response(user_input, pet)
+            raise AIModelError(f"Language model generation failed: {str(e)}")
     
     def _create_prompt(self, user_input: str, pet: DigiPal) -> str:
         """
