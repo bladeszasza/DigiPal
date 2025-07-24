@@ -65,19 +65,19 @@ class GradioInterface:
             user_state = gr.State(None)
             token_state = gr.State(None)
             
-            # Main interface tabs
-            with gr.Tabs() as main_tabs:
+            # Main interface tabs with proper tab switching
+            with gr.Tabs(selected="auth_tab") as main_tabs:
                 
                 # Authentication Tab
                 with gr.Tab("Login", id="auth_tab") as auth_tab:
                     auth_components = self._create_authentication_tab()
                 
-                # Egg Selection Tab (hidden initially)
-                with gr.Tab("Choose Your Egg", id="egg_tab", visible=False) as egg_tab:
+                # Egg Selection Tab
+                with gr.Tab("Choose Your Egg", id="egg_tab") as egg_tab:
                     egg_components = self._create_egg_selection_interface()
                 
-                # Main DigiPal Interface (hidden initially)
-                with gr.Tab("Your DigiPal", id="main_tab", visible=False) as main_tab:
+                # Main DigiPal Interface
+                with gr.Tab("Your DigiPal", id="main_tab") as main_tab:
                     main_components = self._create_digipal_main_interface()
             
             # Event handlers
@@ -608,7 +608,7 @@ class GradioInterface:
                 '<div class="error">Please enter a token</div>',
                 current_user,
                 current_token,
-                gr.Tabs(selected="auth_tab")
+                gr.update(selected="auth_tab")  # Stay on auth tab
             )
         
         # Set offline mode if requested
@@ -635,7 +635,7 @@ class GradioInterface:
                     status_msg,
                     auth_result.user.id,
                     token,
-                    gr.Tabs(selected="main_tab")
+                    gr.update(selected="main_tab")  # Go to main tab
                 )
             else:
                 # New user, go to egg selection
@@ -647,7 +647,7 @@ class GradioInterface:
                     status_msg,
                     auth_result.user.id,
                     token,
-                    gr.Tabs(selected="egg_tab")
+                    gr.update(selected="egg_tab")  # Go to egg tab
                 )
         else:
             error_msg = f'<div class="error">Login failed: {auth_result.error_message}</div>'
@@ -655,7 +655,7 @@ class GradioInterface:
                 error_msg,
                 current_user,
                 current_token,
-                gr.Tabs(selected="auth_tab")
+                gr.update(selected="auth_tab")  # Stay on auth tab
             )
     
     def _handle_egg_selection(self, egg_type: EggType, user_id: Optional[str]) -> Tuple:
@@ -663,7 +663,7 @@ class GradioInterface:
         if not user_id:
             return (
                 '<div class="error">Please login first</div>',
-                gr.Tabs(selected="auth_tab")
+                gr.update(selected="auth_tab")  # Go back to auth tab
             )
         
         try:
@@ -680,14 +680,14 @@ class GradioInterface:
             
             return (
                 success_msg,
-                gr.Tabs(selected="main_tab")
+                gr.update(selected="main_tab")  # Go to main tab
             )
             
         except Exception as e:
             logger.error(f"Error creating new pet: {e}")
             return (
                 f'<div class="error">Failed to create DigiPal: {str(e)}</div>',
-                gr.Tabs(selected="egg_tab")
+                gr.update(selected="egg_tab")  # Stay on egg tab
             )
     
     def _handle_text_interaction(self, text: str, user_id: Optional[str]) -> Tuple:
