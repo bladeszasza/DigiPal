@@ -254,6 +254,7 @@ class TestGradioInterface:
         mock_pet_state.energy = 75
         mock_pet_state.happiness = 90
         mock_pet_state.weight = 25
+        mock_pet_state.needs_attention = False
         
         mock_digipal_core.process_interaction.return_value = (True, mock_interaction)
         mock_digipal_core.get_pet_state.return_value = mock_pet_state
@@ -264,13 +265,14 @@ class TestGradioInterface:
         # Test interaction
         result = gradio_interface._handle_text_interaction("Hello DigiPal", "test_user")
         
-        # Verify results
-        response, cleared_input, status, attributes, history = result
+        # Verify results (now returns 7 values)
+        response, cleared_input, status, attributes, history, feedback, needs = result
         
         assert "Hello there!" in response
         assert cleared_input == ""  # Input should be cleared
         assert "TestPal" in status
         assert "Baby" in status
+        assert "Message sent!" in feedback
         mock_digipal_core.process_interaction.assert_called_once_with("test_user", "Hello DigiPal")
     
     def test_handle_care_action(self, gradio_interface, mock_digipal_core):
@@ -289,6 +291,7 @@ class TestGradioInterface:
         mock_pet_state.energy = 80
         mock_pet_state.happiness = 95
         mock_pet_state.weight = 30
+        mock_pet_state.needs_attention = False
         
         mock_digipal_core.apply_care_action.return_value = (True, mock_interaction)
         mock_digipal_core.get_pet_state.return_value = mock_pet_state
@@ -296,12 +299,13 @@ class TestGradioInterface:
         # Test care action
         result = gradio_interface._handle_care_action("feed", "test_user")
         
-        # Verify results
-        response, status, attributes = result
+        # Verify results (now returns 5 values)
+        response, status, attributes, feedback, needs = result
         
-        assert "Care Action:</strong> Feed" in response
+        assert "Care Action:</strong> 🍖 Feed" in response
         assert "Thanks for feeding me!" in response
         assert "TestPal" in status
+        assert "Feed completed!" in feedback
         mock_digipal_core.apply_care_action.assert_called_once_with("test_user", "feed")
     
     def test_format_pet_status(self, gradio_interface):
@@ -398,7 +402,7 @@ class TestGradioInterface:
         """Test text interaction without user."""
         result = gradio_interface._handle_text_interaction("Hello", None)
         
-        response, text, status, attributes, history = result
+        response, text, status, attributes, history, feedback, needs = result
         
         assert "Please enter a message" in response
     
@@ -406,7 +410,7 @@ class TestGradioInterface:
         """Test text interaction with empty text."""
         result = gradio_interface._handle_text_interaction("", "test_user")
         
-        response, text, status, attributes, history = result
+        response, text, status, attributes, history, feedback, needs = result
         
         assert "Please enter a message" in response
     
@@ -414,7 +418,7 @@ class TestGradioInterface:
         """Test care action without user."""
         result = gradio_interface._handle_care_action("feed", None)
         
-        response, status, attributes = result
+        response, status, attributes, feedback, needs = result
         
         assert "Please login first" in response
 
@@ -448,6 +452,28 @@ class TestGradioInterfaceIntegration:
         assert isinstance(gradio_app, gr.Blocks)
         assert interface.app is not None
     
+    def test_enhanced_main_interface_components(self, mock_components):
+        """Test all enhanced main interface components are created."""
+        interface = GradioInterface(
+            mock_components['digipal_core'],
+            mock_components['auth_manager']
+        )
+        
+        with gr.Blocks() as test_interface:
+            main_components = interface._create_digipal_main_interface()
+        
+        # Check all enhanced components exist
+        enhanced_components = [
+            'action_feedback', 'needs_display', 'auto_refresh',
+            'strength_train_btn', 'speed_train_btn', 'brain_train_btn', 'defense_train_btn',
+            'medicine_btn', 'clean_btn', 'audio_status', 'process_audio_btn',
+            'quick_hello_btn', 'quick_status_btn', 'clear_history_btn', 'export_history_btn'
+        ]
+        
+        for component in enhanced_components:
+            assert component in main_components
+            assert main_components[component] is not None
+    
     def test_launch_interface_parameters(self, mock_components):
         """Test interface launch with different parameters."""
         interface = GradioInterface(
@@ -474,6 +500,293 @@ class TestGradioInterfaceIntegration:
                 debug=True,
                 show_error=True
             )
+
+
+class TestEnhancedInteractionComponents:
+    """Test enhanced interaction components and features."""
+    
+    @pytest.fixture
+    def mock_digipal_core(self):
+        """Create mock DigiPal core with enhanced methods."""
+        mock_core = Mock(spec=DigiPalCore)
+        return mock_core
+    
+    @pytest.fixture
+    def mock_auth_manager(self):
+        """Create mock authentication manager."""
+        mock_auth = Mock(spec=AuthManager)
+        return mock_auth
+    
+    @pytest.fixture
+    def gradio_interface(self, mock_digipal_core, mock_auth_manager):
+        """Create GradioInterface instance."""
+        return GradioInterface(mock_digipal_core, mock_auth_manager)
+    
+    def test_handle_quick_message(self, gradio_interface, mock_digipal_core):
+        """Test quick message handling."""
+        # Setup mocks
+        mock_interaction = Mock()
+        mock_interaction.pet_response = "Hello there!"
+        mock_interaction.success = True
+        
+        mock_pet_state = Mock(spec=PetState)
+        mock_pet_state.name = "TestPal"
+        mock_pet_state.life_stage = LifeStage.CHILD
+        mock_pet_state.age_hours = 5.0
+        mock_pet_state.status_summary = "Happy"
+        mock_pet_state.hp = 85
+        mock_pet_state.energy = 80
+        mock_pet_state.happiness = 90
+        mock_pet_state.weight = 30
+        mock_pet_state.needs_attention = False
+        
+        mock_digipal_core.process_interaction.return_value = (True, mock_interaction)
+        mock_digipal_core.get_pet_state.return_value = mock_pet_state
+        mock_digipal_core.get_pet_statistics.return_value = {
+            'interaction_summary': {'recent_interactions': []}
+        }
+        
+        # Test quick message
+        result = gradio_interface._handle_quick_message("Hello!", "test_user")
+        
+        # Verify results
+        response, status, attributes, history, feedback = result
+        
+        assert "Quick Message:</strong> Hello!" in response
+        assert "Hello there!" in response
+        assert "TestPal" in status
+        assert "Quick message sent!" in feedback
+        mock_digipal_core.process_interaction.assert_called_once_with("test_user", "Hello!")
+    
+    def test_handle_audio_interaction(self, gradio_interface, mock_digipal_core):
+        """Test audio interaction handling."""
+        # Setup mocks
+        mock_interaction = Mock()
+        mock_interaction.user_input = "Hello DigiPal"
+        mock_interaction.pet_response = "Hi there!"
+        mock_interaction.success = True
+        
+        mock_pet_state = Mock(spec=PetState)
+        mock_pet_state.name = "TestPal"
+        mock_pet_state.life_stage = LifeStage.TEEN
+        mock_pet_state.age_hours = 25.0
+        mock_pet_state.status_summary = "Energetic"
+        mock_pet_state.hp = 90
+        mock_pet_state.energy = 85
+        mock_pet_state.happiness = 75
+        mock_pet_state.weight = 35
+        
+        mock_digipal_core.process_audio_interaction.return_value = (True, mock_interaction)
+        mock_digipal_core.get_pet_state.return_value = mock_pet_state
+        mock_digipal_core.get_pet_statistics.return_value = {
+            'interaction_summary': {'recent_interactions': []}
+        }
+        
+        # Test audio interaction
+        import numpy as np
+        fake_audio = np.array([0.1, 0.2, 0.3])
+        
+        result = gradio_interface._handle_audio_interaction(fake_audio, "test_user")
+        
+        # Verify results
+        audio_status, response, status, attributes, history = result
+        
+        assert "Speech processed successfully" in audio_status
+        assert "Speech Input:</strong> Hello DigiPal" in response
+        assert "Hi there!" in response
+        assert "TestPal" in status
+        mock_digipal_core.process_audio_interaction.assert_called_once_with("test_user", fake_audio)
+    
+    def test_handle_audio_interaction_no_audio(self, gradio_interface):
+        """Test audio interaction with no audio data."""
+        result = gradio_interface._handle_audio_interaction(None, "test_user")
+        
+        audio_status, response, status, attributes, history = result
+        
+        assert "Please record some audio first" in audio_status
+    
+    def test_handle_training_sub_actions(self, gradio_interface, mock_digipal_core):
+        """Test training sub-action handling."""
+        # Setup mocks
+        mock_interaction = Mock()
+        mock_interaction.pet_response = "Great strength training!"
+        mock_interaction.success = True
+        
+        mock_pet_state = Mock(spec=PetState)
+        mock_pet_state.name = "TestPal"
+        mock_pet_state.life_stage = LifeStage.YOUNG_ADULT
+        mock_pet_state.age_hours = 100.0
+        mock_pet_state.status_summary = "Strong"
+        mock_pet_state.hp = 95
+        mock_pet_state.energy = 70
+        mock_pet_state.happiness = 80
+        mock_pet_state.weight = 40
+        mock_pet_state.needs_attention = False
+        
+        mock_digipal_core.apply_care_action.return_value = (True, mock_interaction)
+        mock_digipal_core.get_pet_state.return_value = mock_pet_state
+        
+        # Test strength training
+        result = gradio_interface._handle_care_action("strength_train", "test_user")
+        
+        # Verify results
+        response, status, attributes, feedback, needs = result
+        
+        assert "Care Action:</strong> 🏋️ Strength Train" in response
+        assert "Great strength training!" in response
+        assert "Strength Train completed!" in feedback
+        mock_digipal_core.apply_care_action.assert_called_once_with("test_user", "strength_train")
+    
+    def test_handle_clear_history(self, gradio_interface, mock_digipal_core):
+        """Test conversation history clearing."""
+        # Setup mock
+        mock_digipal_core.clear_conversation_history.return_value = True
+        
+        # Test clearing history
+        result = gradio_interface._handle_clear_history("test_user")
+        
+        # Verify results
+        history, response = result
+        
+        assert "Conversation history cleared" in history
+        assert "Conversation history has been cleared!" in response
+        mock_digipal_core.clear_conversation_history.assert_called_once_with("test_user")
+    
+    def test_handle_export_history(self, gradio_interface, mock_digipal_core):
+        """Test conversation history export."""
+        # Setup mock
+        mock_interactions = [
+            {
+                'user_input': 'Hello',
+                'pet_response': 'Hi there!',
+                'timestamp': '2024-01-01 12:00:00'
+            },
+            {
+                'user_input': 'How are you?',
+                'pet_response': 'I am doing great!',
+                'timestamp': '2024-01-01 12:01:00'
+            }
+        ]
+        
+        mock_stats = {
+            'interaction_summary': {
+                'recent_interactions': mock_interactions
+            }
+        }
+        
+        mock_digipal_core.get_pet_statistics.return_value = mock_stats
+        
+        # Test export
+        result = gradio_interface._handle_export_history("test_user")
+        
+        # Verify result is a file path
+        assert result is not None
+        assert isinstance(result, str)
+        assert result.endswith('.txt')
+        
+        # Clean up temporary file
+        import os
+        if os.path.exists(result):
+            os.unlink(result)
+    
+    def test_format_needs_display(self, gradio_interface):
+        """Test needs display formatting."""
+        # Create mock pet state with various needs
+        mock_pet_state = Mock(spec=PetState)
+        mock_pet_state.energy = 15  # Very low
+        mock_pet_state.happiness = 25  # Low
+        mock_pet_state.weight = 10  # Too thin
+        mock_pet_state.needs_attention = True
+        
+        # Test formatting
+        needs_html = gradio_interface._format_needs_display(mock_pet_state)
+        
+        # Verify content
+        assert "Needs Attention" in needs_html
+        assert "Very tired" in needs_html
+        assert "Unhappy" in needs_html
+        assert "Too thin" in needs_html
+        assert "Hasn't been interacted with recently" in needs_html
+    
+    def test_format_needs_display_all_good(self, gradio_interface):
+        """Test needs display when all needs are met."""
+        # Create mock pet state with good stats
+        mock_pet_state = Mock(spec=PetState)
+        mock_pet_state.energy = 80
+        mock_pet_state.happiness = 85
+        mock_pet_state.weight = 35
+        mock_pet_state.needs_attention = False
+        
+        # Test formatting
+        needs_html = gradio_interface._format_needs_display(mock_pet_state)
+        
+        # Verify content
+        assert "All needs are being met!" in needs_html
+        assert "all-good" in needs_html
+    
+    def test_toggle_auto_refresh(self, gradio_interface):
+        """Test auto-refresh toggle functionality."""
+        # Test enabling auto-refresh
+        result_enabled = gradio_interface._toggle_auto_refresh(True, "test_user")
+        assert "Auto-refresh enabled" in result_enabled
+        assert "every 30 seconds" in result_enabled
+        
+        # Test disabling auto-refresh
+        result_disabled = gradio_interface._toggle_auto_refresh(False, "test_user")
+        assert "Auto-refresh disabled" in result_disabled
+        assert "only on interaction" in result_disabled
+    
+    def test_enhanced_css_generation(self, gradio_interface):
+        """Test enhanced CSS includes new styles."""
+        css = gradio_interface._get_custom_css()
+        
+        # Check for enhanced styles
+        enhanced_styles = [
+            ".action-feedback",
+            ".interaction-feedback",
+            ".care-feedback",
+            ".quick-feedback",
+            ".needs-display",
+            ".sub-care-btn",
+            ".speech-panel",
+            ".audio-status",
+            ".processing",
+            ".text-input-panel",
+            ".quick-msg-btn",
+            "@keyframes fadeInOut",
+            "@keyframes pulse"
+        ]
+        
+        for style in enhanced_styles:
+            assert style in css
+    
+    def test_offline_mode_functionality(self, gradio_interface, mock_auth_manager, mock_digipal_core):
+        """Test offline mode functionality."""
+        # Setup mocks for offline mode
+        mock_user = User(
+            id="offline_user",
+            username="offlineuser",
+            created_at=datetime.now()
+        )
+        
+        mock_auth_result = AuthResult(
+            status=AuthStatus.OFFLINE_MODE,
+            user=mock_user
+        )
+        
+        mock_auth_manager.authenticate.return_value = mock_auth_result
+        mock_digipal_core.load_existing_pet.return_value = None
+        
+        # Test offline login
+        result = gradio_interface._handle_login("any_token", True, None, None)
+        
+        # Verify results
+        auth_status, user_id, token, tabs = result
+        
+        assert "Welcome, offlineuser" in auth_status
+        assert "Running in offline mode" in auth_status
+        assert user_id == "offline_user"
+        assert mock_auth_manager.offline_mode is True
 
 
 if __name__ == "__main__":

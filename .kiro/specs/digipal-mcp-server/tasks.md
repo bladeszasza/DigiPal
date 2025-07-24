@@ -196,12 +196,13 @@ image.save("flux-dev.png")
   - Write UI component tests and interaction validation
   - _Requirements: 1.1, 3.1_
 
-- [ ] 13. Implement pet interaction interface components
+- [x] 13. Implement pet interaction interface components
   - Create CareActionsPanel with training, feeding, and care controls
   - Add StatusDisplay component showing real-time attributes and pet state
   - Implement speech input interface with audio recording capabilities
   - Create pet response display area with conversation history
   - Add visual feedback for user actions and pet reactions
+  - Add offline test withouth a HF-token to be able to test it localy
   - Write UI integration tests for all interaction components
   - _Requirements: 5.1, 7.1, 7.2, 7.3, 7.4, 8.3_
 

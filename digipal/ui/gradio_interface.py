@@ -235,7 +235,7 @@ class GradioInterface:
             # Left column - Pet display and status
             with gr.Column(scale=2, elem_classes=["pet-display-column"]):
                 
-                # Pet display area
+                # Pet display area with visual feedback
                 with gr.Group(elem_classes=["pet-display-area"]):
                     pet_image = gr.Image(
                         label="Your DigiPal",
@@ -248,65 +248,126 @@ class GradioInterface:
                         "<h3>Your DigiPal</h3>",
                         elem_classes=["pet-name"]
                     )
-                
-                # Status display
-                with gr.Group(elem_classes=["status-display"]):
-                    gr.HTML("<h4>📊 Status</h4>")
                     
+                    # Visual feedback area for actions
+                    action_feedback = gr.HTML(
+                        "",
+                        elem_classes=["action-feedback"]
+                    )
+                
+                # Enhanced status display with real-time updates
+                with gr.Group(elem_classes=["status-display"]):
+                    gr.HTML("<h4>📊 Real-Time Status</h4>")
+                    
+                    # Basic status info
                     status_info = gr.HTML(
                         "",
                         elem_classes=["status-info"]
                     )
                     
-                    # Attribute bars (will be updated with JavaScript)
+                    # Detailed attribute bars with animations
                     attributes_display = gr.HTML(
                         "",
                         elem_classes=["attributes-display"]
                     )
+                    
+                    # Needs and alerts
+                    needs_display = gr.HTML(
+                        "",
+                        elem_classes=["needs-display"]
+                    )
+                    
+                    # Auto-refresh toggle
+                    auto_refresh = gr.Checkbox(
+                        label="Auto-refresh status (every 30s)",
+                        value=True,
+                        elem_classes=["auto-refresh-toggle"]
+                    )
             
-            # Right column - Interaction controls
+            # Right column - Enhanced interaction controls
             with gr.Column(scale=1, elem_classes=["interaction-column"]):
                 
-                # Care actions panel
+                # Enhanced care actions panel with detailed controls
                 with gr.Group(elem_classes=["care-actions-panel"]):
                     gr.HTML("<h4>🎮 Care Actions</h4>")
                     
+                    # Primary care actions
                     with gr.Row():
-                        feed_btn = gr.Button("🍖 Feed", elem_classes=["care-btn"])
-                        train_btn = gr.Button("💪 Train", elem_classes=["care-btn"])
+                        feed_btn = gr.Button("🍖 Feed", elem_classes=["care-btn", "feed-btn"])
+                        train_btn = gr.Button("💪 Train", elem_classes=["care-btn", "train-btn"])
                     
-                    with gr.Row():
-                        praise_btn = gr.Button("👍 Praise", elem_classes=["care-btn"])
-                        scold_btn = gr.Button("👎 Scold", elem_classes=["care-btn"])
+                    # Training sub-options
+                    with gr.Accordion("Training Options", open=False):
+                        with gr.Row():
+                            strength_train_btn = gr.Button("🏋️ Strength", elem_classes=["sub-care-btn"])
+                            speed_train_btn = gr.Button("🏃 Speed", elem_classes=["sub-care-btn"])
+                        with gr.Row():
+                            brain_train_btn = gr.Button("🧠 Brains", elem_classes=["sub-care-btn"])
+                            defense_train_btn = gr.Button("🛡️ Defense", elem_classes=["sub-care-btn"])
                     
+                    # Emotional care
                     with gr.Row():
-                        rest_btn = gr.Button("😴 Rest", elem_classes=["care-btn"])
-                        play_btn = gr.Button("🎾 Play", elem_classes=["care-btn"])
+                        praise_btn = gr.Button("👍 Praise", elem_classes=["care-btn", "praise-btn"])
+                        scold_btn = gr.Button("👎 Scold", elem_classes=["care-btn", "scold-btn"])
+                    
+                    # Rest and play
+                    with gr.Row():
+                        rest_btn = gr.Button("😴 Rest", elem_classes=["care-btn", "rest-btn"])
+                        play_btn = gr.Button("🎾 Play", elem_classes=["care-btn", "play-btn"])
+                    
+                    # Advanced care options
+                    with gr.Accordion("Advanced Care", open=False):
+                        with gr.Row():
+                            medicine_btn = gr.Button("💊 Medicine", elem_classes=["sub-care-btn"])
+                            clean_btn = gr.Button("🧼 Clean", elem_classes=["sub-care-btn"])
                 
-                # Speech interaction
-                gr.HTML("<h4>🎤 Talk to Your DigiPal</h4>")
+                # Enhanced speech interaction interface
+                with gr.Group(elem_classes=["speech-panel"]):
+                    gr.HTML("<h4>🎤 Voice Interaction</h4>")
+                    
+                    # Audio recording with enhanced controls
+                    audio_input = gr.Audio(
+                        label="Record your voice (click to start/stop)",
+                        type="numpy",
+                        elem_classes=["audio-input"]
+                    )
+                    
+                    # Audio processing status
+                    audio_status = gr.HTML(
+                        "",
+                        elem_classes=["audio-status"]
+                    )
+                    
+                    # Process audio button
+                    process_audio_btn = gr.Button(
+                        "🎵 Process Speech",
+                        variant="secondary",
+                        elem_classes=["process-audio-btn"]
+                    )
                 
-                # Audio input (will be implemented in future tasks)
-                audio_input = gr.Audio(
-                    label="Record your voice",
-                    type="numpy",
-                    elem_classes=["audio-input"]
-                )
+                # Text input as alternative with enhanced features
+                with gr.Group(elem_classes=["text-input-panel"]):
+                    gr.HTML("<h4>💬 Text Chat</h4>")
+                    
+                    text_input = gr.Textbox(
+                        label="Type a message",
+                        placeholder="Say something to your DigiPal...",
+                        elem_classes=["text-input"],
+                        lines=2
+                    )
+                    
+                    # Quick message buttons
+                    with gr.Row():
+                        quick_hello_btn = gr.Button("👋 Hello", elem_classes=["quick-msg-btn"])
+                        quick_status_btn = gr.Button("❓ How are you?", elem_classes=["quick-msg-btn"])
+                    
+                    send_btn = gr.Button(
+                        "Send Message",
+                        variant="primary",
+                        elem_classes=["send-btn"]
+                    )
                 
-                # Text input as alternative
-                text_input = gr.Textbox(
-                    label="Or type a message",
-                    placeholder="Say something to your DigiPal...",
-                    elem_classes=["text-input"]
-                )
-                
-                send_btn = gr.Button(
-                    "Send",
-                    variant="primary",
-                    elem_classes=["send-btn"]
-                )
-                
-                # Response display
+                # Enhanced response display with conversation history
                 with gr.Group(elem_classes=["response-panel"]):
                     gr.HTML("<h4>💬 DigiPal Response</h4>")
                     
@@ -315,29 +376,48 @@ class GradioInterface:
                         elem_classes=["response-display"]
                     )
                     
-                    # Conversation history
-                    with gr.Accordion("Conversation History", open=False):
-                        conversation_history = gr.HTML(
-                            "",
-                            elem_classes=["conversation-history"]
-                        )
+                    # Live conversation history (always visible)
+                    conversation_history = gr.HTML(
+                        "",
+                        elem_classes=["conversation-history"]
+                    )
+                    
+                    # Conversation controls
+                    with gr.Row():
+                        clear_history_btn = gr.Button("🗑️ Clear History", elem_classes=["clear-btn"])
+                        export_history_btn = gr.Button("📥 Export Chat", elem_classes=["export-btn"])
         
         return {
             'pet_image': pet_image,
             'pet_name_display': pet_name_display,
+            'action_feedback': action_feedback,
             'status_info': status_info,
             'attributes_display': attributes_display,
+            'needs_display': needs_display,
+            'auto_refresh': auto_refresh,
             'feed_btn': feed_btn,
             'train_btn': train_btn,
+            'strength_train_btn': strength_train_btn,
+            'speed_train_btn': speed_train_btn,
+            'brain_train_btn': brain_train_btn,
+            'defense_train_btn': defense_train_btn,
             'praise_btn': praise_btn,
             'scold_btn': scold_btn,
             'rest_btn': rest_btn,
             'play_btn': play_btn,
+            'medicine_btn': medicine_btn,
+            'clean_btn': clean_btn,
             'audio_input': audio_input,
+            'audio_status': audio_status,
+            'process_audio_btn': process_audio_btn,
             'text_input': text_input,
+            'quick_hello_btn': quick_hello_btn,
+            'quick_status_btn': quick_status_btn,
             'send_btn': send_btn,
             'response_display': response_display,
-            'conversation_history': conversation_history
+            'conversation_history': conversation_history,
+            'clear_history_btn': clear_history_btn,
+            'export_history_btn': export_history_btn
         }
     
     def _setup_event_handlers(self, auth_components: Dict, egg_components: Dict, 
@@ -377,7 +457,7 @@ class GradioInterface:
                 ]
             )
         
-        # Main interface handlers
+        # Text interaction handlers
         main_components['send_btn'].click(
             fn=self._handle_text_interaction,
             inputs=[
@@ -389,12 +469,55 @@ class GradioInterface:
                 main_components['text_input'],
                 main_components['status_info'],
                 main_components['attributes_display'],
+                main_components['conversation_history'],
+                main_components['action_feedback'],
+                main_components['needs_display']
+            ]
+        )
+        
+        # Quick message handlers
+        main_components['quick_hello_btn'].click(
+            fn=self._handle_quick_message,
+            inputs=[gr.State("Hello!"), user_state],
+            outputs=[
+                main_components['response_display'],
+                main_components['status_info'],
+                main_components['attributes_display'],
+                main_components['conversation_history'],
+                main_components['action_feedback']
+            ]
+        )
+        
+        main_components['quick_status_btn'].click(
+            fn=self._handle_quick_message,
+            inputs=[gr.State("How are you?"), user_state],
+            outputs=[
+                main_components['response_display'],
+                main_components['status_info'],
+                main_components['attributes_display'],
+                main_components['conversation_history'],
+                main_components['action_feedback']
+            ]
+        )
+        
+        # Audio processing handler
+        main_components['process_audio_btn'].click(
+            fn=self._handle_audio_interaction,
+            inputs=[
+                main_components['audio_input'],
+                user_state
+            ],
+            outputs=[
+                main_components['audio_status'],
+                main_components['response_display'],
+                main_components['status_info'],
+                main_components['attributes_display'],
                 main_components['conversation_history']
             ]
         )
         
-        # Care action handlers
-        care_actions = {
+        # Primary care action handlers
+        primary_care_actions = {
             'feed': main_components['feed_btn'],
             'train': main_components['train_btn'],
             'praise': main_components['praise_btn'],
@@ -403,16 +526,79 @@ class GradioInterface:
             'play': main_components['play_btn']
         }
         
-        for action_name, btn in care_actions.items():
+        for action_name, btn in primary_care_actions.items():
             btn.click(
                 fn=lambda action=action_name: self._handle_care_action(action, user_state.value),
                 inputs=[user_state],
                 outputs=[
                     main_components['response_display'],
                     main_components['status_info'],
-                    main_components['attributes_display']
+                    main_components['attributes_display'],
+                    main_components['action_feedback'],
+                    main_components['needs_display']
                 ]
             )
+        
+        # Training sub-action handlers
+        training_actions = {
+            'strength_train': main_components['strength_train_btn'],
+            'speed_train': main_components['speed_train_btn'],
+            'brain_train': main_components['brain_train_btn'],
+            'defense_train': main_components['defense_train_btn']
+        }
+        
+        for action_name, btn in training_actions.items():
+            btn.click(
+                fn=lambda action=action_name: self._handle_care_action(action, user_state.value),
+                inputs=[user_state],
+                outputs=[
+                    main_components['response_display'],
+                    main_components['status_info'],
+                    main_components['attributes_display'],
+                    main_components['action_feedback']
+                ]
+            )
+        
+        # Advanced care action handlers
+        advanced_care_actions = {
+            'medicine': main_components['medicine_btn'],
+            'clean': main_components['clean_btn']
+        }
+        
+        for action_name, btn in advanced_care_actions.items():
+            btn.click(
+                fn=lambda action=action_name: self._handle_care_action(action, user_state.value),
+                inputs=[user_state],
+                outputs=[
+                    main_components['response_display'],
+                    main_components['status_info'],
+                    main_components['attributes_display'],
+                    main_components['action_feedback']
+                ]
+            )
+        
+        # Conversation management handlers
+        main_components['clear_history_btn'].click(
+            fn=self._handle_clear_history,
+            inputs=[user_state],
+            outputs=[
+                main_components['conversation_history'],
+                main_components['response_display']
+            ]
+        )
+        
+        main_components['export_history_btn'].click(
+            fn=self._handle_export_history,
+            inputs=[user_state],
+            outputs=[gr.File()]
+        )
+        
+        # Auto-refresh handler (periodic update)
+        main_components['auto_refresh'].change(
+            fn=self._toggle_auto_refresh,
+            inputs=[main_components['auto_refresh'], user_state],
+            outputs=[main_components['status_info']]
+        )
     
     def _handle_login(self, token: str, offline_mode: bool, 
                      current_user: Optional[str], current_token: Optional[str]) -> Tuple:
@@ -512,6 +698,8 @@ class GradioInterface:
                 text,
                 "",
                 "",
+                "",
+                "",
                 ""
             )
         
@@ -529,21 +717,34 @@ class GradioInterface:
                 # Get updated pet state
                 pet_state = self.digipal_core.get_pet_state(user_id)
                 status_html, attributes_html = self._format_pet_status(pet_state)
+                needs_html = self._format_needs_display(pet_state)
                 
                 # Update conversation history
                 history_html = self._format_conversation_history(user_id)
+                
+                # Visual feedback for interaction
+                feedback_html = f'''
+                    <div class="interaction-feedback">
+                        <span class="feedback-icon">💬</span>
+                        <span class="feedback-text">Message sent!</span>
+                    </div>
+                '''
                 
                 return (
                     response_html,
                     "",  # Clear text input
                     status_html,
                     attributes_html,
-                    history_html
+                    history_html,
+                    feedback_html,
+                    needs_html
                 )
             else:
                 return (
                     f'<div class="error">Interaction failed: {interaction.pet_response}</div>',
                     text,
+                    "",
+                    "",
                     "",
                     "",
                     ""
@@ -556,14 +757,18 @@ class GradioInterface:
                 text,
                 "",
                 "",
+                "",
+                "",
                 ""
             )
     
     def _handle_care_action(self, action: str, user_id: Optional[str]) -> Tuple:
-        """Handle care action."""
+        """Handle care action with enhanced feedback."""
         if not user_id:
             return (
                 '<div class="error">Please login first</div>',
+                "",
+                "",
                 "",
                 ""
             )
@@ -573,9 +778,27 @@ class GradioInterface:
             success, interaction = self.digipal_core.apply_care_action(user_id, action)
             
             if success:
+                # Action-specific icons and colors
+                action_icons = {
+                    'feed': '🍖',
+                    'train': '💪',
+                    'strength_train': '🏋️',
+                    'speed_train': '🏃',
+                    'brain_train': '🧠',
+                    'defense_train': '🛡️',
+                    'praise': '👍',
+                    'scold': '👎',
+                    'rest': '😴',
+                    'play': '🎾',
+                    'medicine': '💊',
+                    'clean': '🧼'
+                }
+                
+                icon = action_icons.get(action, '🎮')
+                
                 response_html = f'''
                     <div class="care-response">
-                        <p><strong>Care Action:</strong> {action.title()}</p>
+                        <p><strong>Care Action:</strong> {icon} {action.replace('_', ' ').title()}</p>
                         <p><strong>DigiPal:</strong> {interaction.pet_response}</p>
                     </div>
                 '''
@@ -583,15 +806,28 @@ class GradioInterface:
                 # Get updated pet state
                 pet_state = self.digipal_core.get_pet_state(user_id)
                 status_html, attributes_html = self._format_pet_status(pet_state)
+                needs_html = self._format_needs_display(pet_state)
+                
+                # Visual feedback for care action
+                feedback_html = f'''
+                    <div class="care-feedback">
+                        <span class="feedback-icon">{icon}</span>
+                        <span class="feedback-text">{action.replace('_', ' ').title()} completed!</span>
+                    </div>
+                '''
                 
                 return (
                     response_html,
                     status_html,
-                    attributes_html
+                    attributes_html,
+                    feedback_html,
+                    needs_html
                 )
             else:
                 return (
                     f'<div class="error">Care action failed: {interaction.pet_response}</div>',
+                    "",
+                    "",
                     "",
                     ""
                 )
@@ -600,6 +836,8 @@ class GradioInterface:
             logger.error(f"Error applying care action: {e}")
             return (
                 f'<div class="error">Error: {str(e)}</div>',
+                "",
+                "",
                 "",
                 ""
             )
@@ -691,6 +929,258 @@ class GradioInterface:
         except Exception as e:
             logger.error(f"Error formatting conversation history: {e}")
             return "<p>Error loading conversation history.</p>"
+    
+    def _format_needs_display(self, pet_state: Optional[PetState]) -> str:
+        """Format pet needs and alerts for display."""
+        if not pet_state:
+            return ""
+        
+        needs_html = "<div class='needs-alerts'>"
+        
+        # Check for urgent needs
+        urgent_needs = []
+        if pet_state.energy < 20:
+            urgent_needs.append("🔴 Very tired - needs rest!")
+        elif pet_state.energy < 40:
+            urgent_needs.append("🟡 Getting tired")
+            
+        if pet_state.happiness < 30:
+            urgent_needs.append("🔴 Unhappy - needs attention!")
+        elif pet_state.happiness < 50:
+            urgent_needs.append("🟡 Could be happier")
+            
+        if pet_state.weight < 15:
+            urgent_needs.append("🔴 Too thin - needs food!")
+        elif pet_state.weight > 75:
+            urgent_needs.append("🔴 Overweight - needs exercise!")
+            
+        if pet_state.needs_attention:
+            urgent_needs.append("⚠️ Hasn't been interacted with recently")
+        
+        if urgent_needs:
+            needs_html += "<h5>🚨 Needs Attention:</h5><ul>"
+            for need in urgent_needs:
+                needs_html += f"<li>{need}</li>"
+            needs_html += "</ul>"
+        else:
+            needs_html += "<p class='all-good'>✅ All needs are being met!</p>"
+        
+        needs_html += "</div>"
+        return needs_html
+    
+    def _handle_quick_message(self, message: str, user_id: Optional[str]) -> Tuple:
+        """Handle quick message buttons."""
+        if not user_id:
+            return (
+                '<div class="error">Please login first</div>',
+                "",
+                "",
+                "",
+                ""
+            )
+        
+        try:
+            # Process the quick message
+            success, interaction = self.digipal_core.process_interaction(user_id, message)
+            
+            if success:
+                response_html = f'''
+                    <div class="pet-response quick-response">
+                        <p><strong>Quick Message:</strong> {message}</p>
+                        <p><strong>DigiPal:</strong> {interaction.pet_response}</p>
+                    </div>
+                '''
+                
+                # Get updated pet state
+                pet_state = self.digipal_core.get_pet_state(user_id)
+                status_html, attributes_html = self._format_pet_status(pet_state)
+                
+                # Update conversation history
+                history_html = self._format_conversation_history(user_id)
+                
+                # Visual feedback
+                feedback_html = f'''
+                    <div class="quick-feedback">
+                        <span class="feedback-icon">⚡</span>
+                        <span class="feedback-text">Quick message sent!</span>
+                    </div>
+                '''
+                
+                return (
+                    response_html,
+                    status_html,
+                    attributes_html,
+                    history_html,
+                    feedback_html
+                )
+            else:
+                return (
+                    f'<div class="error">Quick message failed: {interaction.pet_response}</div>',
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+                
+        except Exception as e:
+            logger.error(f"Error processing quick message: {e}")
+            return (
+                f'<div class="error">Error: {str(e)}</div>',
+                "",
+                "",
+                "",
+                ""
+            )
+    
+    def _handle_audio_interaction(self, audio_data, user_id: Optional[str]) -> Tuple:
+        """Handle audio input and speech processing."""
+        if not user_id:
+            return (
+                '<div class="error">Please login first</div>',
+                "",
+                "",
+                "",
+                ""
+            )
+        
+        if audio_data is None:
+            return (
+                '<div class="info">Please record some audio first</div>',
+                "",
+                "",
+                "",
+                ""
+            )
+        
+        try:
+            # Update audio status
+            status_html = '<div class="processing">🎵 Processing speech...</div>'
+            
+            # Process audio through speech recognition
+            # Note: This will use the AI communication layer's speech processor
+            success, interaction = self.digipal_core.process_audio_interaction(user_id, audio_data)
+            
+            if success:
+                response_html = f'''
+                    <div class="pet-response audio-response">
+                        <p><strong>Speech Input:</strong> {interaction.user_input}</p>
+                        <p><strong>DigiPal:</strong> {interaction.pet_response}</p>
+                    </div>
+                '''
+                
+                # Get updated pet state
+                pet_state = self.digipal_core.get_pet_state(user_id)
+                status_html, attributes_html = self._format_pet_status(pet_state)
+                
+                # Update conversation history
+                history_html = self._format_conversation_history(user_id)
+                
+                audio_status_final = '<div class="success">✅ Speech processed successfully!</div>'
+                
+                return (
+                    audio_status_final,
+                    response_html,
+                    status_html,
+                    attributes_html,
+                    history_html
+                )
+            else:
+                return (
+                    f'<div class="error">Speech processing failed: {interaction.pet_response}</div>',
+                    "",
+                    "",
+                    "",
+                    ""
+                )
+                
+        except Exception as e:
+            logger.error(f"Error processing audio: {e}")
+            return (
+                f'<div class="error">Audio processing error: {str(e)}</div>',
+                "",
+                "",
+                "",
+                ""
+            )
+    
+    def _handle_clear_history(self, user_id: Optional[str]) -> Tuple:
+        """Handle clearing conversation history."""
+        if not user_id:
+            return (
+                "<p>Please login first.</p>",
+                '<div class="error">Please login first</div>'
+            )
+        
+        try:
+            # Clear conversation history in the core
+            success = self.digipal_core.clear_conversation_history(user_id)
+            
+            if success:
+                return (
+                    "<p>Conversation history cleared.</p>",
+                    '<div class="success">Conversation history has been cleared!</div>'
+                )
+            else:
+                return (
+                    "<p>Error clearing conversation history.</p>",
+                    '<div class="error">Failed to clear conversation history</div>'
+                )
+                
+        except Exception as e:
+            logger.error(f"Error clearing history: {e}")
+            return (
+                "<p>Error clearing conversation history.</p>",
+                f'<div class="error">Error: {str(e)}</div>'
+            )
+    
+    def _handle_export_history(self, user_id: Optional[str]):
+        """Handle exporting conversation history."""
+        if not user_id:
+            return None
+        
+        try:
+            # Get conversation history
+            pet_stats = self.digipal_core.get_pet_statistics(user_id)
+            interactions = pet_stats.get('interaction_summary', {}).get('recent_interactions', [])
+            
+            if not interactions:
+                return None
+            
+            # Create export content
+            export_content = "DigiPal Conversation History\n"
+            export_content += "=" * 30 + "\n\n"
+            
+            for i, interaction in enumerate(interactions, 1):
+                export_content += f"Interaction {i}:\n"
+                export_content += f"You: {interaction.get('user_input', '')}\n"
+                export_content += f"DigiPal: {interaction.get('pet_response', '')}\n"
+                export_content += f"Timestamp: {interaction.get('timestamp', '')}\n\n"
+            
+            # Save to temporary file
+            import tempfile
+            import os
+            
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+                f.write(export_content)
+                temp_path = f.name
+            
+            return temp_path
+            
+        except Exception as e:
+            logger.error(f"Error exporting history: {e}")
+            return None
+    
+    def _toggle_auto_refresh(self, auto_refresh_enabled: bool, user_id: Optional[str]) -> str:
+        """Handle auto-refresh toggle."""
+        if not user_id:
+            return ""
+        
+        if auto_refresh_enabled:
+            status_msg = '<div class="info">Auto-refresh enabled - status will update every 30 seconds</div>'
+        else:
+            status_msg = '<div class="info">Auto-refresh disabled - status updates only on interaction</div>'
+        
+        return status_msg
     
     def _get_custom_css(self) -> str:
         """Get custom CSS for game-style UI."""
@@ -996,6 +1486,227 @@ class GradioInterface:
             color: #388e3c;
         }
         
+        /* Enhanced feedback and visual effects */
+        .action-feedback {
+            text-align: center;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            min-height: 30px;
+        }
+        
+        .interaction-feedback, .care-feedback, .quick-feedback {
+            background: linear-gradient(45deg, #e8f5e8, #c8e6c9);
+            border: 1px solid #4caf50;
+            animation: fadeInOut 3s ease-in-out;
+        }
+        
+        .care-feedback {
+            background: linear-gradient(45deg, #fff3e0, #ffcc02);
+            border: 1px solid #ff9800;
+        }
+        
+        .quick-feedback {
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            border: 1px solid #2196f3;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+        
+        .feedback-icon {
+            font-size: 1.2em;
+            margin-right: 0.5rem;
+        }
+        
+        .feedback-text {
+            font-weight: bold;
+        }
+        
+        /* Enhanced needs display */
+        .needs-display {
+            background: #fff8e1;
+            border: 1px solid #ffcc02;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .needs-alerts h5 {
+            color: #e65100;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .needs-alerts ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .needs-alerts li {
+            margin-bottom: 0.25rem;
+            color: #bf360c;
+        }
+        
+        .all-good {
+            color: #2e7d32;
+            font-weight: bold;
+            text-align: center;
+            margin: 0;
+        }
+        
+        /* Enhanced care action buttons */
+        .sub-care-btn {
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 12px;
+            margin: 0.2rem;
+            transition: all 0.2s ease;
+            background: linear-gradient(45deg, #f5f5f5, #e0e0e0);
+        }
+        
+        .sub-care-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, #e8f5e8, #c8e6c9);
+        }
+        
+        .feed-btn {
+            background: linear-gradient(45deg, #ffeb3b, #ffc107);
+        }
+        
+        .train-btn {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+        
+        .praise-btn {
+            background: linear-gradient(45deg, #4caf50, #388e3c);
+        }
+        
+        .scold-btn {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+        
+        .rest-btn {
+            background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+        }
+        
+        .play-btn {
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+        }
+        
+        /* Enhanced speech panel */
+        .speech-panel {
+            background: #f3e5f5;
+            border: 2px solid #9c27b0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .audio-input {
+            border: 2px dashed #9c27b0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .audio-status {
+            text-align: center;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            min-height: 25px;
+        }
+        
+        .processing {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffcc02;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .process-audio-btn {
+            background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+        }
+        
+        /* Enhanced text input panel */
+        .text-input-panel {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-msg-btn {
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            border: 1px solid #2196f3;
+            border-radius: 15px;
+            padding: 0.3rem 0.8rem;
+            font-size: 12px;
+            margin: 0.2rem;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-msg-btn:hover {
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        /* Enhanced response display */
+        .pet-response.audio-response {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+        }
+        
+        .pet-response.quick-response {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        
+        /* Conversation controls */
+        .clear-btn, .export-btn {
+            background: linear-gradient(45deg, #757575, #616161);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 12px;
+            margin: 0.2rem;
+        }
+        
+        .clear-btn:hover {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+        
+        .export-btn:hover {
+            background: linear-gradient(45deg, #4caf50, #388e3c);
+        }
+        
+        /* Auto-refresh toggle */
+        .auto-refresh-toggle {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
         /* Status messages */
         .success {
             background: #d4edda;
@@ -1045,6 +1756,27 @@ class GradioInterface:
         
         .instructions a:hover {
             text-decoration: underline;
+        }
+        
+        /* Responsive design improvements */
+        @media (max-width: 768px) {
+            .pet-display-column, .interaction-column {
+                margin: 0.5rem 0;
+            }
+            
+            .care-btn, .sub-care-btn {
+                font-size: 12px;
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .egg-options {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .auth-form {
+                padding: 1rem;
+            }
         }
         """
     

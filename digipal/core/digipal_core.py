@@ -709,6 +709,96 @@ class DigiPalCore:
             'learned_commands': list(pet.learned_commands)
         }
     
+    def process_audio_interaction(self, user_id: str, audio_data) -> Tuple[bool, Interaction]:
+        """
+        Process audio interaction with user's DigiPal.
+        
+        Args:
+            user_id: User ID
+            audio_data: Audio data from microphone
+            
+        Returns:
+            Tuple of (success, interaction)
+        """
+        pet = self.active_pets.get(user_id)
+        if not pet:
+            pet = self.load_existing_pet(user_id)
+        
+        if not pet:
+            error_interaction = Interaction(
+                timestamp=datetime.now(),
+                user_input="",
+                interpreted_command="",
+                pet_response="No DigiPal found. Please create one first.",
+                attribute_changes={},
+                success=False
+            )
+            return False, error_interaction
+        
+        try:
+            # Process audio through AI communication layer
+            text_input = self.ai_communication.process_speech(audio_data)
+            
+            if not text_input or text_input.strip() == "":
+                error_interaction = Interaction(
+                    timestamp=datetime.now(),
+                    user_input="",
+                    interpreted_command="",
+                    pet_response="I couldn't understand what you said. Please try again.",
+                    attribute_changes={},
+                    success=False
+                )
+                return False, error_interaction
+            
+            # Process the transcribed text as a regular interaction
+            return self.process_interaction(user_id, text_input)
+            
+        except Exception as e:
+            logger.error(f"Error processing audio interaction for user {user_id}: {e}")
+            error_interaction = Interaction(
+                timestamp=datetime.now(),
+                user_input="",
+                interpreted_command="",
+                pet_response=f"Sorry, I had trouble processing your voice. Error: {str(e)}",
+                attribute_changes={},
+                success=False
+            )
+            return False, error_interaction
+    
+    def clear_conversation_history(self, user_id: str) -> bool:
+        """
+        Clear conversation history for user's DigiPal.
+        
+        Args:
+            user_id: User ID
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        pet = self.active_pets.get(user_id)
+        if not pet:
+            pet = self.load_existing_pet(user_id)
+        
+        if not pet:
+            return False
+        
+        try:
+            # Clear conversation history in pet
+            pet.conversation_history.clear()
+            
+            # Clear memory in AI communication layer
+            self.ai_communication.memory_manager.clear_conversation_memory(pet)
+            
+            # Save the updated pet
+            self.storage_manager.save_pet(pet)
+            
+            logger.info(f"Cleared conversation history for pet {pet.id}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error clearing conversation history for user {user_id}: {e}")
+            return False
+    
     def shutdown(self):
         """Shutdown the DigiPal core engine and save all active pets."""
         logger.info("Shutting down DigiPalCore")
