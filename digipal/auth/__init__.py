@@ -7,12 +7,13 @@ and offline development support.
 
 from .auth_manager import AuthManager
 from .session_manager import SessionManager
-from .models import User, AuthSession, AuthResult
+from .models import User, AuthSession, AuthResult, AuthStatus
 
 __all__ = [
     'AuthManager',
     'SessionManager', 
     'User',
     'AuthSession',
-    'AuthResult'
+    'AuthResult',
+    'AuthStatus'
 ]
