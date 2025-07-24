@@ -449,7 +449,7 @@ class GradioInterface:
             (EggType.GREEN, egg_components['green_egg_btn'])
         ]:
             btn.click(
-                fn=lambda egg=egg_type: self._handle_egg_selection(egg, user_state.value),
+                fn=lambda user_state_val, egg=egg_type: self._handle_egg_selection(egg, user_state_val),
                 inputs=[user_state],
                 outputs=[
                     egg_components['egg_status'],
@@ -528,7 +528,7 @@ class GradioInterface:
         
         for action_name, btn in primary_care_actions.items():
             btn.click(
-                fn=lambda action=action_name: self._handle_care_action(action, user_state.value),
+                fn=lambda user_state_val, action=action_name: self._handle_care_action(action, user_state_val),
                 inputs=[user_state],
                 outputs=[
                     main_components['response_display'],
@@ -549,7 +549,7 @@ class GradioInterface:
         
         for action_name, btn in training_actions.items():
             btn.click(
-                fn=lambda action=action_name: self._handle_care_action(action, user_state.value),
+                fn=lambda user_state_val, action=action_name: self._handle_care_action(action, user_state_val),
                 inputs=[user_state],
                 outputs=[
                     main_components['response_display'],
@@ -567,7 +567,7 @@ class GradioInterface:
         
         for action_name, btn in advanced_care_actions.items():
             btn.click(
-                fn=lambda action=action_name: self._handle_care_action(action, user_state.value),
+                fn=lambda user_state_val, action=action_name: self._handle_care_action(action, user_state_val),
                 inputs=[user_state],
                 outputs=[
                     main_components['response_display'],
