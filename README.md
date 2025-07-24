@@ -437,6 +437,7 @@ Following the [implementation roadmap](.kiro/specs/digipal-mcp-server/tasks.md),
 
 ### 🐛 Recent Fixes
 - **Gradio Interface**: Fixed egg selection event handler parameter passing to ensure proper user state management
+- **Care Action Handlers**: Fixed primary care action event handlers to properly pass user state parameters, ensuring reliable care action execution
 
 ## 📋 Requirements
 
