@@ -244,6 +244,7 @@ image.save("flux-dev.png")
 
 - [ ] 18. Add deployment configuration and documentation
   - Create Docker configuration for containerized deployment
+  - https://huggingface.co/docs/hub/spaces-sdks-docker
   - Implement environment configuration management
   - Add logging and monitoring setup for production deployment
   - Create API documentation for MCP endpoints
