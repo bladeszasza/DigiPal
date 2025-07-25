@@ -215,14 +215,49 @@ async with ClientSession(server_params) as session:
 
 ## Error Handling
 
-The MCP server provides comprehensive error handling:
+The MCP server provides comprehensive error handling with automated recovery:
 
+### Error Categories
 - **Validation Errors**: Invalid parameters or missing required fields
 - **Authentication Errors**: Unauthenticated users or insufficient permissions
 - **Pet Not Found**: Attempts to interact with non-existent pets
-- **System Errors**: Database failures, AI model issues, etc.
+- **System Errors**: Database failures, AI model issues, network problems
+- **Recovery Errors**: Issues during automated recovery attempts
 
-All errors are returned as MCP-compliant error responses with descriptive messages.
+### Automated Recovery
+The MCP server integrates with the DigiPal error handling and recovery system:
+
+```python
+from digipal.core.recovery_strategies import get_system_recovery_orchestrator
+
+# Automatic error recovery in MCP operations
+try:
+    result = await mcp_operation()
+except DigiPalException as e:
+    orchestrator = get_system_recovery_orchestrator()
+    recovery_result = orchestrator.execute_comprehensive_recovery(e)
+    
+    if recovery_result.success:
+        # Retry operation after successful recovery
+        result = await mcp_operation()
+    else:
+        # Return user-friendly error with recovery suggestions
+        return create_error_response(e, recovery_result)
+```
+
+### Error Response Format
+All errors are returned as MCP-compliant error responses with:
+- **Error Code**: Standardized error classification
+- **Error Message**: User-friendly description
+- **Recovery Suggestions**: Actionable recommendations
+- **Context Information**: Additional debugging details (in development mode)
+
+### Graceful Degradation
+The MCP server supports graceful degradation:
+- **AI Model Failures**: Fallback to simple response templates
+- **Network Issues**: Offline mode with cached data
+- **Storage Problems**: Alternative storage locations and read-only mode
+- **Authentication Issues**: Guest mode with limited functionality
 
 ## Testing
 

@@ -1,0 +1,13 @@
+{
+  "automatic_20250725_072431_8255": {
+    "backup_id": "automatic_20250725_072431_8255",
+    "timestamp": "2025-07-25T07:24:31.947755",
+    "backup_type": "automatic",
+    "file_path": "demo_assets/backups/backup_automatic_20250725_072431_8255.db.gz",
+    "checksum": "139a93781315a49a3ed8c506cbfd45f1fe4b81a143a227731d55371d9e66865e",
+    "size_bytes": 2727,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Scheduled automatic backup"
+  }
+}

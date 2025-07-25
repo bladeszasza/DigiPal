@@ -1,0 +1,112 @@
+{
+  "pre_operation_20250724_181239_9239": {
+    "backup_id": "pre_operation_20250724_181239_9239",
+    "timestamp": "2025-07-24T18:12:39.910279",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_181239_9239.db.gz",
+    "checksum": "191d31d8d57c456617b2f0939b22148c4165112e8e10ddee4292bb86585d6f5f",
+    "size_bytes": 3261,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"6ec11f65-1f77-442d-8080-eb0805ad0d1b\", \"user_id\": \"offline_14075641f857c575\"})"
+  },
+  "pre_operation_20250724_181258_5242": {
+    "backup_id": "pre_operation_20250724_181258_5242",
+    "timestamp": "2025-07-24T18:12:58.715868",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_181258_5242.db.gz",
+    "checksum": "6a76899ddf7bf5322479d1c6b1c070592e1a6bcab041a83bcb7a35b5a2ae48dd",
+    "size_bytes": 3403,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"6ec11f65-1f77-442d-8080-eb0805ad0d1b\", \"user_id\": \"offline_14075641f857c575\"})"
+  },
+  "pre_operation_20250724_181304_2064": {
+    "backup_id": "pre_operation_20250724_181304_2064",
+    "timestamp": "2025-07-24T18:13:04.934196",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_181304_2064.db.gz",
+    "checksum": "081eb06b868ecc00bfc6ac1578269b7d4081d3a1b2fe3a368037fcc52470527d",
+    "size_bytes": 3450,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"6ec11f65-1f77-442d-8080-eb0805ad0d1b\", \"user_id\": \"offline_14075641f857c575\"})"
+  },
+  "pre_operation_20250724_181331_9931": {
+    "backup_id": "pre_operation_20250724_181331_9931",
+    "timestamp": "2025-07-24T18:13:31.571414",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_181331_9931.db.gz",
+    "checksum": "54b50a139fdb009c2ac259b65ba4fe61aa456427cce80401885a08a5d52ed27e",
+    "size_bytes": 3522,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"6ec11f65-1f77-442d-8080-eb0805ad0d1b\", \"user_id\": \"offline_14075641f857c575\"})"
+  },
+  "pre_operation_20250724_203639_8119": {
+    "backup_id": "pre_operation_20250724_203639_8119",
+    "timestamp": "2025-07-24T20:36:39.165973",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_203639_8119.db.gz",
+    "checksum": "307166b34980dbd888eceecc5a878fb6a3b88974e01c5abcef9cc1c517dd4a74",
+    "size_bytes": 4877,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"e8ecb462-4d30-4ff5-9a1e-59c7b1560aee\", \"user_id\": \"offline_test_user\"})"
+  },
+  "pre_operation_20250724_203640_6552": {
+    "backup_id": "pre_operation_20250724_203640_6552",
+    "timestamp": "2025-07-24T20:36:40.505842",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_203640_6552.db.gz",
+    "checksum": "462f91e4ceb9fbb3a4da8c3293afbb11621eed677605bad3295ce534358dfd61",
+    "size_bytes": 4982,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"e8ecb462-4d30-4ff5-9a1e-59c7b1560aee\", \"user_id\": \"offline_test_user\"})"
+  },
+  "pre_operation_20250724_203659_2315": {
+    "backup_id": "pre_operation_20250724_203659_2315",
+    "timestamp": "2025-07-24T20:36:59.233483",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_203659_2315.db.gz",
+    "checksum": "4aa8720e3fc61b3b51c18eea7f892613e64e2062bf79bdc86b9eb945b36a0c52",
+    "size_bytes": 5148,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"3f5d0cf4-9778-493e-9b3f-6b9bfadc82bf\", \"user_id\": \"offline_9641d1601a04163b\"})"
+  },
+  "pre_operation_20250724_203705_4609": {
+    "backup_id": "pre_operation_20250724_203705_4609",
+    "timestamp": "2025-07-24T20:37:05.858506",
+    "backup_type": "pre_operation",
+    "file_path": "assets/backups/backup_pre_operation_20250724_203705_4609.db.gz",
+    "checksum": "9df347df0ae4f0aad48de390f09423eea68d3ad6d5c1bf57f53922d7ab7f988e",
+    "size_bytes": 5275,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"3f5d0cf4-9778-493e-9b3f-6b9bfadc82bf\", \"user_id\": \"offline_9641d1601a04163b\"})"
+  },
+  "automatic_20250725_003639_7879": {
+    "backup_id": "automatic_20250725_003639_7879",
+    "timestamp": "2025-07-25T00:36:39.195234",
+    "backup_type": "automatic",
+    "file_path": "assets/backups/backup_automatic_20250725_003639_7879.db.gz",
+    "checksum": "114e3819654d66ab5df44014ebd3351f68db42811d11dcf84fbbd91d04f8f548",
+    "size_bytes": 5380,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Scheduled automatic backup"
+  },
+  "automatic_20250725_073639_3575": {
+    "backup_id": "automatic_20250725_073639_3575",
+    "timestamp": "2025-07-25T07:36:39.071863",
+    "backup_type": "automatic",
+    "file_path": "assets/backups/backup_automatic_20250725_073639_3575.db.gz",
+    "checksum": "3a5fee38e6037b1de40329a979909d6d18dece2b7b3519dae23d5961a7f69abc",
+    "size_bytes": 5380,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Scheduled automatic backup"
+  }
+}

@@ -5,7 +5,11 @@
       "Bash(git cherry-pick:*)",
       "Bash(git branch:*)",
       "Bash(git revert:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(python -m pytest --help)",
+      "Bash(python:*)",
+      "Bash(find:*)",
+      "Bash(timeout:*)"
     ],
     "deny": []
   }

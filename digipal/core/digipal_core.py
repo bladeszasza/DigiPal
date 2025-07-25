@@ -16,6 +16,12 @@ from .models import DigiPal, Interaction, Command
 from .enums import EggType, LifeStage, InteractionResult, AttributeType
 from .attribute_engine import AttributeEngine
 from .evolution_controller import EvolutionController, EvolutionResult
+from .memory_manager import EnhancedMemoryManager
+from .performance_optimizer import (
+    LazyModelLoader, BackgroundTaskManager, DatabaseOptimizer, 
+    PerformanceMonitor, ResourceCleanupManager,
+    ModelLoadingConfig, BackgroundTaskConfig
+)
 from ..storage.storage_manager import StorageManager
 from ..ai.communication import AICommunication
 
@@ -212,31 +218,189 @@ class DigiPalCore:
     the main interface for DigiPal operations.
     """
     
-    def __init__(self, storage_manager: StorageManager, ai_communication: AICommunication):
+    def __init__(self, storage_manager: StorageManager, ai_communication: AICommunication,
+                 enable_performance_optimization: bool = True):
         """
         Initialize DigiPal Core Engine.
         
         Args:
             storage_manager: Storage manager for data persistence
             ai_communication: AI communication layer
+            enable_performance_optimization: Whether to enable performance optimization features
         """
         self.storage_manager = storage_manager
         self.ai_communication = ai_communication
+        self.enable_performance_optimization = enable_performance_optimization
         
         # Initialize core components
         self.attribute_engine = AttributeEngine()
         self.evolution_controller = EvolutionController()
+        
+        # Initialize enhanced memory manager
+        self.enhanced_memory_manager = EnhancedMemoryManager(storage_manager)
+        
+        # Update AI communication with enhanced memory manager
+        self.ai_communication.enhanced_memory_manager = self.enhanced_memory_manager
+        
         self.interaction_processor = InteractionProcessor(ai_communication, self.attribute_engine)
         
         # Active pets cache (user_id -> DigiPal)
         self.active_pets: Dict[str, DigiPal] = {}
         
-        # Background update system
-        self._update_thread = None
-        self._stop_updates = False
-        self._update_interval = 60  # Update every minute
+        # Performance optimization components
+        if enable_performance_optimization:
+            self._initialize_performance_optimization()
+        else:
+            self._update_thread = None
+            self._stop_updates = False
+            self._update_interval = 60  # Update every minute
         
         logger.info("DigiPalCore initialized successfully")
+        logger.info(f"Performance optimization: {'enabled' if enable_performance_optimization else 'disabled'}")
+    
+    def _initialize_performance_optimization(self):
+        """Initialize performance optimization components."""
+        # Model loading optimization
+        model_config = ModelLoadingConfig(
+            lazy_loading=True,
+            quantization=True,
+            model_cache_size=2,
+            unload_after_idle_minutes=30
+        )
+        self.model_loader = LazyModelLoader(model_config)
+        
+        # Background task management
+        task_config = BackgroundTaskConfig()
+        self.background_task_manager = BackgroundTaskManager(task_config, self.storage_manager)
+        
+        # Database optimization
+        self.database_optimizer = DatabaseOptimizer(self.storage_manager)
+        
+        # Performance monitoring
+        self.performance_monitor = PerformanceMonitor()
+        
+        # Resource cleanup
+        self.resource_cleanup_manager = ResourceCleanupManager()
+        
+        # Register cleanup callbacks
+        self.resource_cleanup_manager.register_cleanup_callback(
+            lambda: self.enhanced_memory_manager.cleanup_old_memories
+        )
+        
+        # Start background tasks
+        self._start_background_tasks()
+        
+        logger.info("Performance optimization components initialized")
+    
+    def _start_background_tasks(self):
+        """Start background tasks for optimization."""
+        if not self.enable_performance_optimization:
+            return
+        
+        # Attribute decay task
+        self.background_task_manager.register_task(
+            "attribute_decay",
+            self._background_attribute_decay,
+            300  # 5 minutes
+        )
+        
+        # Evolution check task
+        self.background_task_manager.register_task(
+            "evolution_check",
+            self._background_evolution_check,
+            600  # 10 minutes
+        )
+        
+        # Memory cleanup task
+        self.background_task_manager.register_task(
+            "memory_cleanup",
+            self._background_memory_cleanup,
+            1800  # 30 minutes
+        )
+        
+        # Database optimization task
+        self.background_task_manager.register_task(
+            "database_optimization",
+            self._background_database_optimization,
+            3600  # 1 hour
+        )
+        
+        # Performance monitoring task
+        self.background_task_manager.register_task(
+            "performance_monitoring",
+            self._background_performance_monitoring,
+            60  # 1 minute
+        )
+        
+        # Resource cleanup task
+        self.background_task_manager.register_task(
+            "resource_cleanup",
+            self._background_resource_cleanup,
+            900  # 15 minutes
+        )
+        
+        # Start model cleanup
+        self.model_loader.start_cleanup_thread()
+        
+        # Start memory cleanup
+        self.enhanced_memory_manager.start_background_cleanup()
+        
+        logger.info("Background tasks started")
+    
+    def _background_attribute_decay(self):
+        """Background task for attribute decay."""
+        try:
+            for user_id, pet in list(self.active_pets.items()):
+                self._apply_time_based_updates(pet)
+        except Exception as e:
+            logger.error(f"Error in background attribute decay: {e}")
+    
+    def _background_evolution_check(self):
+        """Background task for evolution checks."""
+        try:
+            for user_id, pet in list(self.active_pets.items()):
+                self._check_and_apply_evolution(pet)
+        except Exception as e:
+            logger.error(f"Error in background evolution check: {e}")
+    
+    def _background_memory_cleanup(self):
+        """Background task for memory cleanup."""
+        try:
+            for user_id, pet in list(self.active_pets.items()):
+                self.enhanced_memory_manager.cleanup_old_memories(pet.id)
+        except Exception as e:
+            logger.error(f"Error in background memory cleanup: {e}")
+    
+    def _background_database_optimization(self):
+        """Background task for database optimization."""
+        try:
+            self.database_optimizer.optimize_database()
+        except Exception as e:
+            logger.error(f"Error in background database optimization: {e}")
+    
+    def _background_performance_monitoring(self):
+        """Background task for performance monitoring."""
+        try:
+            active_pets = len(self.active_pets)
+            cached_models = len(self.model_loader.loaded_models) if hasattr(self, 'model_loader') else 0
+            
+            # Calculate average response time (simplified)
+            response_time_avg = 1.0  # Placeholder
+            
+            self.performance_monitor.collect_metrics(
+                active_pets=active_pets,
+                cached_models=cached_models,
+                response_time_avg=response_time_avg
+            )
+        except Exception as e:
+            logger.error(f"Error in background performance monitoring: {e}")
+    
+    def _background_resource_cleanup(self):
+        """Background task for resource cleanup."""
+        try:
+            self.resource_cleanup_manager.perform_cleanup()
+        except Exception as e:
+            logger.error(f"Error in background resource cleanup: {e}")
     
     def create_new_pet(self, egg_type: EggType, user_id: str, name: str = "DigiPal") -> DigiPal:
         """
@@ -650,6 +814,84 @@ class DigiPalCore:
         
         return success, interaction
     
+    def get_performance_statistics(self) -> Dict[str, Any]:
+        """Get comprehensive performance statistics."""
+        if not self.enable_performance_optimization:
+            return {'performance_optimization': 'disabled'}
+        
+        stats = {
+            'performance_optimization': 'enabled',
+            'active_pets': len(self.active_pets),
+            'model_cache': self.model_loader.get_cache_info(),
+            'background_tasks': self.background_task_manager.get_task_performance(),
+            'performance_summary': self.performance_monitor.get_performance_summary(),
+            'performance_alerts': self.performance_monitor.check_performance_alerts(),
+            'optimization_suggestions': self.performance_monitor.suggest_optimizations(),
+            'memory_info': self.resource_cleanup_manager.get_memory_info()
+        }
+        
+        return stats
+    
+    def get_memory_statistics(self, user_id: str) -> Dict[str, Any]:
+        """Get memory statistics for a user's pet."""
+        pet = self.active_pets.get(user_id)
+        if not pet:
+            pet = self.load_existing_pet(user_id)
+        
+        if not pet:
+            return {'error': 'Pet not found'}
+        
+        stats = {
+            'pet_id': pet.id,
+            'conversation_history_size': len(pet.conversation_history),
+            'learned_commands': len(pet.learned_commands),
+            'personality_traits': len(pet.personality_traits)
+        }
+        
+        # Add enhanced memory statistics if available
+        if self.enhanced_memory_manager:
+            enhanced_stats = self.enhanced_memory_manager.get_memory_statistics(pet.id)
+            stats.update(enhanced_stats)
+            
+            # Add emotional state summary
+            emotional_state = self.enhanced_memory_manager.get_emotional_state_summary(pet.id)
+            stats['emotional_state'] = emotional_state
+        
+        return stats
+    
+    def optimize_performance(self) -> Dict[str, Any]:
+        """Manually trigger performance optimization."""
+        if not self.enable_performance_optimization:
+            return {'error': 'Performance optimization not enabled'}
+        
+        results = {}
+        
+        try:
+            # Database optimization
+            results['database'] = self.database_optimizer.optimize_database()
+            
+            # Create suggested indexes
+            results['indexes'] = self.database_optimizer.create_suggested_indexes()
+            
+            # Resource cleanup
+            results['cleanup'] = self.resource_cleanup_manager.perform_cleanup(force_gc=True)
+            
+            # Memory cleanup for all pets
+            cleanup_counts = {}
+            for user_id, pet in self.active_pets.items():
+                count = self.enhanced_memory_manager.cleanup_old_memories(pet.id)
+                if count > 0:
+                    cleanup_counts[user_id] = count
+            results['memory_cleanup'] = cleanup_counts
+            
+            logger.info("Manual performance optimization completed")
+            
+        except Exception as e:
+            logger.error(f"Performance optimization failed: {e}")
+            results['error'] = str(e)
+        
+        return results
+    
     def get_pet_statistics(self, user_id: str) -> Dict[str, Any]:
         """
         Get comprehensive statistics for user's DigiPal.
@@ -803,8 +1045,13 @@ class DigiPalCore:
         """Shutdown the DigiPal core engine and save all active pets."""
         logger.info("Shutting down DigiPalCore")
         
-        # Stop background updates
-        self.stop_background_updates()
+        # Stop background tasks
+        if self.enable_performance_optimization:
+            self.background_task_manager.stop_all_tasks()
+            self.model_loader.shutdown()
+            self.enhanced_memory_manager.shutdown()
+        else:
+            self.stop_background_updates()
         
         # Save all active pets
         for user_id, pet in self.active_pets.items():
@@ -819,5 +1066,9 @@ class DigiPalCore:
         
         # Unload AI models to free memory
         self.ai_communication.unload_all_models()
+        
+        # Final resource cleanup
+        if self.enable_performance_optimization:
+            self.resource_cleanup_manager.perform_cleanup(force_gc=True)
         
         logger.info("DigiPalCore shutdown complete")

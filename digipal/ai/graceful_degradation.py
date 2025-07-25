@@ -7,6 +7,7 @@ ensuring the application continues to function with reduced capabilities.
 
 import logging
 import random
+import functools
 from typing import Dict, List, Optional, Any, Callable
 from datetime import datetime
 from enum import Enum

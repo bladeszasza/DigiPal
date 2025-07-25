@@ -146,6 +146,9 @@ class ErrorHandler:
         self.circuit_breakers: Dict[str, CircuitBreaker] = {}
         self.error_counts: Dict[str, int] = {}
         self.last_errors: Dict[str, datetime] = {}
+        self.error_patterns: Dict[str, List[datetime]] = {}
+        self.critical_error_threshold = 5  # Number of critical errors before emergency mode
+        self.error_rate_window = 300  # 5 minutes window for error rate calculation
     
     def get_circuit_breaker(self, name: str, config: Optional[CircuitBreakerConfig] = None) -> CircuitBreaker:
         """
@@ -180,9 +183,17 @@ class ErrorHandler:
         # If already a DigiPal exception, just add context and return
         if isinstance(error, DigiPalException):
             error.context.update(context)
+            self._track_error_pattern(error)
             return error
         
         # Convert common exceptions to DigiPal exceptions
+        digipal_error = self._convert_to_digipal_exception(error, context)
+        self._track_error_pattern(digipal_error)
+        
+        return digipal_error
+    
+    def _convert_to_digipal_exception(self, error: Exception, context: Dict[str, Any]) -> DigiPalException:
+        """Convert standard exceptions to DigiPal exceptions."""
         if isinstance(error, (ConnectionError, TimeoutError)):
             return NetworkError(
                 f"Network error: {str(error)}",
@@ -204,6 +215,22 @@ class ErrorHandler:
                 error_code="STOR_002"
             )
         
+        if isinstance(error, MemoryError):
+            return AIModelError(
+                f"Memory error: {str(error)}",
+                context=context,
+                error_code="AI_MEM_001"
+            )
+        
+        if isinstance(error, ImportError):
+            return DigiPalException(
+                f"Import error: {str(error)}",
+                category=ErrorCategory.SYSTEM,
+                severity=ErrorSeverity.HIGH,
+                context=context,
+                error_code="SYS_IMP_001"
+            )
+        
         if isinstance(error, ValueError):
             return DigiPalException(
                 f"Invalid value: {str(error)}",
@@ -211,6 +238,24 @@ class ErrorHandler:
                 severity=ErrorSeverity.LOW,
                 context=context,
                 error_code="VAL_001"
+            )
+        
+        if isinstance(error, KeyError):
+            return DigiPalException(
+                f"Missing key: {str(error)}",
+                category=ErrorCategory.VALIDATION,
+                severity=ErrorSeverity.MEDIUM,
+                context=context,
+                error_code="VAL_KEY_001"
+            )
+        
+        if isinstance(error, AttributeError):
+            return DigiPalException(
+                f"Attribute error: {str(error)}",
+                category=ErrorCategory.SYSTEM,
+                severity=ErrorSeverity.MEDIUM,
+                context=context,
+                error_code="SYS_ATTR_001"
             )
         
         # Default to system error
@@ -221,6 +266,76 @@ class ErrorHandler:
             context=context,
             error_code="SYS_001"
         )
+    
+    def _track_error_pattern(self, error: DigiPalException):
+        """Track error patterns for analysis and prevention."""
+        now = datetime.now()
+        error_key = f"{error.category.value}:{error.error_code}"
+        
+        if error_key not in self.error_patterns:
+            self.error_patterns[error_key] = []
+        
+        self.error_patterns[error_key].append(now)
+        
+        # Clean old entries (keep only last 24 hours)
+        cutoff_time = now - timedelta(hours=24)
+        self.error_patterns[error_key] = [
+            timestamp for timestamp in self.error_patterns[error_key]
+            if timestamp > cutoff_time
+        ]
+    
+    def get_error_rate(self, error_category: Optional[str] = None, window_minutes: int = 5) -> float:
+        """
+        Get error rate for a category or overall.
+        
+        Args:
+            error_category: Specific error category (None for all)
+            window_minutes: Time window in minutes
+            
+        Returns:
+            Errors per minute
+        """
+        now = datetime.now()
+        cutoff_time = now - timedelta(minutes=window_minutes)
+        
+        total_errors = 0
+        
+        for error_key, timestamps in self.error_patterns.items():
+            if error_category and not error_key.startswith(f"{error_category}:"):
+                continue
+            
+            recent_errors = [t for t in timestamps if t > cutoff_time]
+            total_errors += len(recent_errors)
+        
+        return total_errors / window_minutes if window_minutes > 0 else 0
+    
+    def is_error_storm_detected(self) -> bool:
+        """
+        Detect if there's an error storm (high error rate).
+        
+        Returns:
+            True if error storm detected
+        """
+        error_rate = self.get_error_rate(window_minutes=5)
+        return error_rate > 10  # More than 10 errors per minute
+    
+    def get_most_frequent_errors(self, limit: int = 5) -> List[Tuple[str, int]]:
+        """
+        Get most frequent error types.
+        
+        Args:
+            limit: Maximum number of errors to return
+            
+        Returns:
+            List of (error_key, count) tuples
+        """
+        error_counts = {}
+        
+        for error_key, timestamps in self.error_patterns.items():
+            error_counts[error_key] = len(timestamps)
+        
+        sorted_errors = sorted(error_counts.items(), key=lambda x: x[1], reverse=True)
+        return sorted_errors[:limit]
     
     def log_error(self, error: DigiPalException, extra_context: Optional[Dict[str, Any]] = None):
         """

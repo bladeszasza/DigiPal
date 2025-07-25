@@ -92,13 +92,14 @@ class LanguageModel:
             raise AIModelError(f"Failed to load model: {str(e)}")
     
     @with_ai_fallback("language_model")
-    def generate_response(self, user_input: str, pet: DigiPal, max_tokens: int = 150) -> str:
+    def generate_response(self, user_input: str, pet: DigiPal, memory_context: str = "", max_tokens: int = 150) -> str:
         """
         Generate contextual response using Qwen3-0.6B model.
         
         Args:
             user_input: User's input text
             pet: DigiPal instance for context
+            memory_context: Additional memory context from RAG system
             max_tokens: Maximum tokens to generate
             
         Returns:
@@ -109,8 +110,8 @@ class LanguageModel:
             raise AIModelError("Language model not loaded")
         
         try:
-            # Create context-aware prompt
-            prompt = self._create_prompt(user_input, pet)
+            # Create context-aware prompt with memory context
+            prompt = self._create_prompt(user_input, pet, memory_context)
             
             # Prepare messages for chat template
             messages = [
@@ -161,13 +162,14 @@ class LanguageModel:
             logger.error(f"Error generating response: {e}")
             raise AIModelError(f"Language model generation failed: {str(e)}")
     
-    def _create_prompt(self, user_input: str, pet: DigiPal) -> str:
+    def _create_prompt(self, user_input: str, pet: DigiPal, memory_context: str = "") -> str:
         """
-        Create context-aware prompt incorporating pet state and personality.
+        Create context-aware prompt incorporating pet state, personality, and memory context.
         
         Args:
             user_input: User's input text
             pet: DigiPal instance for context
+            memory_context: Additional memory context from RAG system
             
         Returns:
             Formatted prompt string
@@ -187,7 +189,7 @@ class LanguageModel:
         # Calculate personality description
         personality_desc = self._get_personality_description(pet)
         
-        # Format the prompt
+        # Format the prompt with memory context
         prompt = template.format(
             name=pet.name,
             life_stage=pet.life_stage.value,
@@ -198,6 +200,7 @@ class LanguageModel:
             age_hours=pet.get_age_hours(),
             personality=personality_desc,
             recent_conversation=conversation_context,
+            memory_context=memory_context,
             user_input=user_input
         )
         
@@ -229,6 +232,8 @@ You are curious, innocent, and learning about the world.
 Recent conversation:
 {recent_conversation}
 
+{memory_context}
+
 User just said: "{user_input}"
 
 Respond as a baby DigiPal would - keep it simple, innocent, and age-appropriate. Use baby talk, simple words, and express basic emotions.
@@ -244,6 +249,8 @@ You are energetic, playful, and eager to learn. You speak in simple sentences an
 
 Recent conversation:
 {recent_conversation}
+
+{memory_context}
 
 User just said: "{user_input}"
 
@@ -262,6 +269,8 @@ You can be a bit rebellious but still care about your relationship with your car
 Recent conversation:
 {recent_conversation}
 
+{memory_context}
+
 User just said: "{user_input}"
 
 Respond as a teenage DigiPal would - more complex thoughts, some attitude, but still caring.
@@ -278,6 +287,8 @@ You're at your physical and mental peak, ready for challenges.
 
 Recent conversation:
 {recent_conversation}
+
+{memory_context}
 
 User just said: "{user_input}"
 
@@ -296,6 +307,8 @@ You're protective and caring, with a strong bond to your caretaker.
 Recent conversation:
 {recent_conversation}
 
+{memory_context}
+
 User just said: "{user_input}"
 
 Respond as a mature adult DigiPal - wise, thoughtful, and caring.
@@ -312,6 +325,8 @@ You often reflect on memories and share wisdom from your long life.
 
 Recent conversation:
 {recent_conversation}
+
+{memory_context}
 
 User just said: "{user_input}"
 

@@ -13,6 +13,7 @@ import torch
 
 from ..core.models import DigiPal, Interaction, Command
 from ..core.enums import LifeStage, CommandType, InteractionResult
+from ..core.memory_manager import EnhancedMemoryManager
 from .language_model import LanguageModel
 from .speech_processor import SpeechProcessor, SpeechProcessingResult
 
@@ -26,7 +27,8 @@ class AICommunication:
     language model interactions, and conversation management.
     """
     
-    def __init__(self, model_name: str = "Qwen/Qwen3-0.6B", quantization: bool = True, kyutai_config: Optional[Dict] = None):
+    def __init__(self, model_name: str = "Qwen/Qwen3-0.6B", quantization: bool = True, 
+                 kyutai_config: Optional[Dict] = None, enhanced_memory_manager: Optional[EnhancedMemoryManager] = None):
         """
         Initialize AI communication system.
         
@@ -34,6 +36,7 @@ class AICommunication:
             model_name: HuggingFace model identifier for Qwen3-0.6B
             quantization: Whether to use quantization for memory optimization
             kyutai_config: Configuration for Kyutai speech processing
+            enhanced_memory_manager: Enhanced memory manager for RAG and emotional memories
         """
         self.model_name = model_name
         self.quantization = quantization
@@ -43,6 +46,9 @@ class AICommunication:
         self.command_interpreter = CommandInterpreter()
         self.response_generator = ResponseGenerator()
         self.memory_manager = ConversationMemoryManager()
+        
+        # Enhanced memory manager for RAG and emotional memories
+        self.enhanced_memory_manager = enhanced_memory_manager
         
         # Initialize language model
         self.language_model = LanguageModel(model_name, quantization)
@@ -57,6 +63,7 @@ class AICommunication:
         logger.info(f"AICommunication initialized with model: {model_name}")
         logger.info(f"Speech processor initialized with model: {speech_model_id}")
         logger.info(f"Quantization enabled: {quantization}")
+        logger.info(f"Enhanced memory manager: {'enabled' if enhanced_memory_manager else 'disabled'}")
     
     def process_speech(self, audio_data: bytes, sample_rate: Optional[int] = None) -> str:
         """
@@ -94,7 +101,7 @@ class AICommunication:
     
     def generate_response(self, input_text: str, pet: DigiPal) -> str:
         """
-        Generate contextual response using Qwen3-0.6B language model.
+        Generate contextual response using Qwen3-0.6B language model with RAG.
         
         Args:
             input_text: User input text
@@ -109,9 +116,23 @@ class AICommunication:
         if not self._model_loaded:
             self.load_model()
         
+        # Get relevant memories for context if enhanced memory manager is available
+        memory_context = ""
+        if self.enhanced_memory_manager:
+            current_context = {
+                'life_stage': pet.life_stage.value,
+                'happiness': pet.happiness,
+                'energy': pet.energy,
+                'recent_interactions': len(pet.conversation_history)
+            }
+            memory_context = self.enhanced_memory_manager.get_memory_context_for_llm(
+                pet.id, input_text, current_context
+            )
+        
         # Use language model if available, otherwise fallback to template responses
         if self.language_model.is_loaded():
-            return self.language_model.generate_response(input_text, pet)
+            # Pass memory context to language model
+            return self.language_model.generate_response(input_text, pet, memory_context)
         else:
             logger.warning("Language model not available, using fallback response generator")
             return self.response_generator.generate_response(input_text, pet)
@@ -169,7 +190,12 @@ class AICommunication:
             interaction: New interaction to add to memory
             pet: DigiPal instance to update
         """
+        # Update traditional conversation memory
         self.memory_manager.add_interaction(interaction, pet)
+        
+        # Update enhanced memory manager with emotional context
+        if self.enhanced_memory_manager:
+            self.enhanced_memory_manager.add_interaction_memory(pet, interaction)
     
     def load_model(self) -> bool:
         """
