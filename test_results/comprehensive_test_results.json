@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-07-25T11:49:15.548179",
+  "test_suites": {
+    "data_generation_tests": {
+      "test_data_generation.py": {
+        "status": "success",
+        "returncode": 0,
+        "duration": 4.749588251113892,
+        "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.11.7, pytest-8.4.1, pluggy-1.6.0 -- /opt/anaconda3/bin/python\ncachedir: .pytest_cache\nrootdir: /Users/csabi/Develop/DigiPal\nplugins: dash-2.17.0, langsmith-0.4.4, anyio-4.2.0, asyncio-1.0.0\nasyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected 6 items\n\ntests/test_data_generation.py::TestDataGenerationValidation::test_random_pet_generation PASSED [ 16%]\ntests/test_data_generation.py::TestDataGenerationValidation::test_life_stage_specific_generation PASSED [ 33%]\ntests/test_data_generation.py::TestDataGenerationValidation::test_interaction_history_generation PASSED [ 50%]\ntests/test_data_generation.py::TestDataGenerationValidation::test_care_scenario_generation PASSED [ 66%]\ntests/test_data_generation.py::TestDataGenerationValidation::test_evolution_ready_pet_generation PASSED [ 83%]\ntests/test_data_generation.py::TestDataGenerationValidation::test_comprehensive_dataset_generation PASSED [100%]\n\n=============================== warnings summary ===============================\ntests/test_data_generation.py:23\n  /Users/csabi/Develop/DigiPal/tests/test_data_generation.py:23: PytestCollectionWarning: cannot collect test class 'TestDataGenerator' because it has a __init__ constructor (from: tests/test_data_generation.py)\n    class TestDataGenerator:\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n========================= 6 passed, 1 warning in 3.24s =========================\n",
+        "stderr": "",
+        "test_details": {
+          "tests_run": 6,
+          "passed": 6,
+          "failed": 0,
+          "skipped": 0,
+          "errors": []
+        }
+      }
+    }
+  },
+  "coverage": {},
+  "performance": {},
+  "summary": {
+    "total_test_suites": 1,
+    "successful_suites": 1,
+    "failed_suites": 0,
+    "skipped_suites": 0,
+    "total_duration": 4.749588251113892,
+    "coverage_percentage": 0
+  }
+}

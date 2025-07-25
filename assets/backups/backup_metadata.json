@@ -1,15 +1,4 @@
 {
-  "pre_operation_20250724_181239_9239": {
-    "backup_id": "pre_operation_20250724_181239_9239",
-    "timestamp": "2025-07-24T18:12:39.910279",
-    "backup_type": "pre_operation",
-    "file_path": "assets/backups/backup_pre_operation_20250724_181239_9239.db.gz",
-    "checksum": "191d31d8d57c456617b2f0939b22148c4165112e8e10ddee4292bb86585d6f5f",
-    "size_bytes": 3261,
-    "user_id": null,
-    "pet_id": null,
-    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"6ec11f65-1f77-442d-8080-eb0805ad0d1b\", \"user_id\": \"offline_14075641f857c575\"})"
-  },
   "pre_operation_20250724_181258_5242": {
     "backup_id": "pre_operation_20250724_181258_5242",
     "timestamp": "2025-07-24T18:12:58.715868",
@@ -104,6 +93,17 @@
     "backup_type": "automatic",
     "file_path": "assets/backups/backup_automatic_20250725_073639_3575.db.gz",
     "checksum": "3a5fee38e6037b1de40329a979909d6d18dece2b7b3519dae23d5961a7f69abc",
+    "size_bytes": 5380,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Scheduled automatic backup"
+  },
+  "automatic_20250725_133639_4471": {
+    "backup_id": "automatic_20250725_133639_4471",
+    "timestamp": "2025-07-25T13:36:39.126779",
+    "backup_type": "automatic",
+    "file_path": "assets/backups/backup_automatic_20250725_133639_4471.db.gz",
+    "checksum": "0c44bed58a2c71b237c6f22dc01a02cfaad4839d27c31bc1eea2a7386b5f0883",
     "size_bytes": 5380,
     "user_id": null,
     "pet_id": null,

@@ -1,0 +1,112 @@
+{
+  "pre_operation_20250725_113530_7346": {
+    "backup_id": "pre_operation_20250725_113530_7346",
+    "timestamp": "2025-07-25T11:35:30.663643",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113530_7346.db.gz",
+    "checksum": "041258c68d52a82116c1f1151aacc47493788c292334c43be930cb071e81007f",
+    "size_bytes": 2256,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"c4fb30f5-2cfb-4847-b760-418a0659cafc\", \"user_id\": \"persistence_user\"})"
+  },
+  "pre_operation_20250725_113915_6739": {
+    "backup_id": "pre_operation_20250725_113915_6739",
+    "timestamp": "2025-07-25T11:39:15.017255",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113915_6739.db.gz",
+    "checksum": "e640b024cb1f5baacadace54200171d8e53e2109157a7a53a2007bcdbb172f06",
+    "size_bytes": 2856,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"61c2c3f9-f844-4116-83d6-3d73130fcb25\", \"user_id\": \"integration_user\"})"
+  },
+  "pre_operation_20250725_113915_2147": {
+    "backup_id": "pre_operation_20250725_113915_2147",
+    "timestamp": "2025-07-25T11:39:15.021316",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113915_2147.db.gz",
+    "checksum": "48c18bbc8c382b3c19ba388d6dee44ce69a3ff8a951bc5b1ae30d36cc3b89fa4",
+    "size_bytes": 3123,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"61c2c3f9-f844-4116-83d6-3d73130fcb25\", \"user_id\": \"integration_user\"})"
+  },
+  "pre_operation_20250725_113915_8979": {
+    "backup_id": "pre_operation_20250725_113915_8979",
+    "timestamp": "2025-07-25T11:39:15.025733",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113915_8979.db.gz",
+    "checksum": "b6eb5bef75f0e8f472817f207f60c57fa7587401e4ff253d6cced1d7600b64f0",
+    "size_bytes": 3310,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"61c2c3f9-f844-4116-83d6-3d73130fcb25\", \"user_id\": \"integration_user\"})"
+  },
+  "pre_operation_20250725_113930_6082": {
+    "backup_id": "pre_operation_20250725_113930_6082",
+    "timestamp": "2025-07-25T11:39:30.980474",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113930_6082.db.gz",
+    "checksum": "e6c5ad5e8c80897f67c15e4753ecb8c2ce5554ef7ec2ff2b37e7a10028030fd6",
+    "size_bytes": 3351,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"61c2c3f9-f844-4116-83d6-3d73130fcb25\", \"user_id\": \"integration_user\"})"
+  },
+  "automatic_20250725_113931_6499": {
+    "backup_id": "automatic_20250725_113931_6499",
+    "timestamp": "2025-07-25T11:39:31.131398",
+    "backup_type": "automatic",
+    "file_path": "test_assets/backups/backup_automatic_20250725_113931_6499.db.gz",
+    "checksum": "8d6915bae4b8d16f2a09eb13af4edc7c8b5b735da1a7c47055909fe60f0e595f",
+    "size_bytes": 2725,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Scheduled automatic backup"
+  },
+  "pre_operation_20250725_113931_4803": {
+    "backup_id": "pre_operation_20250725_113931_4803",
+    "timestamp": "2025-07-25T11:39:31.136802",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113931_4803.db.gz",
+    "checksum": "f34d6c2570eb2a83dc59e09ea79006f181420da579b38af4c0d4714aa16739fa",
+    "size_bytes": 2927,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"45290dfe-c1f8-48cc-863e-d0e0cb8f3192\", \"user_id\": \"persistence_user\"})"
+  },
+  "pre_operation_20250725_113931_4819": {
+    "backup_id": "pre_operation_20250725_113931_4819",
+    "timestamp": "2025-07-25T11:39:31.139593",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113931_4819.db.gz",
+    "checksum": "f5b62a7e5c847795820544b64d9685be82cf804337deb32ca3aaa33dc5ade096",
+    "size_bytes": 3076,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"45290dfe-c1f8-48cc-863e-d0e0cb8f3192\", \"user_id\": \"persistence_user\"})"
+  },
+  "pre_operation_20250725_113947_2371": {
+    "backup_id": "pre_operation_20250725_113947_2371",
+    "timestamp": "2025-07-25T11:39:47.092773",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_113947_2371.db.gz",
+    "checksum": "5d56de4383aaab90490631d94f065c4fe9d24dbd6e7aef5f2883a5475fb4eac6",
+    "size_bytes": 3077,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"45290dfe-c1f8-48cc-863e-d0e0cb8f3192\", \"user_id\": \"persistence_user\"})"
+  },
+  "pre_operation_20250725_114003_5027": {
+    "backup_id": "pre_operation_20250725_114003_5027",
+    "timestamp": "2025-07-25T11:40:03.198142",
+    "backup_type": "pre_operation",
+    "file_path": "test_assets/backups/backup_pre_operation_20250725_114003_5027.db.gz",
+    "checksum": "b1492db7814d29a76182480a0e6e600eec6dc30a9d5c97ceb912565e53392841",
+    "size_bytes": 3151,
+    "user_id": null,
+    "pet_id": null,
+    "description": "Pre-operation backup for: save_pet (context: {\"pet_id\": \"45290dfe-c1f8-48cc-863e-d0e0cb8f3192\", \"user_id\": \"persistence_user\"})"
+  }
+}

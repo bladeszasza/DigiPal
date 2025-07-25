@@ -1,0 +1,49 @@
+# Prometheus alert rules for DigiPal
+
+groups:
+  - name: digipal_alerts
+    rules:
+      - alert: DigiPalDown
+        expr: up{job="digipal"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "DigiPal service is down"
+          description: "DigiPal service has been down for more than 1 minute"
+
+      - alert: HighMemoryUsage
+        expr: process_resident_memory_bytes{job="digipal"} > 2000000000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "DigiPal is using more than 2GB of memory"
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total{job="digipal"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "DigiPal CPU usage is above 80% for 5 minutes"
+
+      - alert: DatabaseErrors
+        expr: increase(digipal_database_errors_total[5m]) > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Database errors detected"
+          description: "More than 5 database errors in the last 5 minutes"
+
+      - alert: AIModelErrors
+        expr: increase(digipal_ai_model_errors_total[5m]) > 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI model errors detected"
+          description: "More than 3 AI model errors in the last 5 minutes"

@@ -1,0 +1,53 @@
+# DigiPal Dependencies
+# Core dependencies
+gradio>=4.0.0
+torch>=2.0.0
+transformers>=4.53.0
+diffusers>=0.30.0
+datasets>=2.0.0
+accelerate>=0.20.0
+safetensors>=0.3.0
+
+# AI Models
+# Qwen3-0.6B for natural language processing
+# Kyutai for speech-to-text (requires transformers >= 4.53.0)
+# FLUX.1-dev for image generation
+
+# Audio processing
+librosa>=0.10.0
+soundfile>=0.12.0
+pyaudio>=0.2.11
+
+# Database and storage
+sqlite3  # Built into Python
+sqlalchemy>=2.0.0
+
+# MCP (Model Context Protocol)
+mcp>=1.0.0
+
+# HuggingFace integration
+huggingface-hub>=0.20.0
+
+# Utilities
+pillow>=10.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+typing-extensions>=4.5.0
+
+# Development and testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.10.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Logging and monitoring
+structlog>=23.0.0
+prometheus-client>=0.17.0
+
+# Production deployment
+gunicorn>=21.0.0
+uvicorn>=0.23.0

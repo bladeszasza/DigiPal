@@ -1,0 +1,13 @@
+{
+  "summary": {
+    "total_files": 84,
+    "analyzed_files": 82,
+    "files_with_issues": 75,
+    "total_unused_imports": 194,
+    "total_unused_functions": 1136,
+    "total_unused_variables": 91
+  },
+  "file_analysis": [
+    {
+      "file": "/Users/csabi/Develop/DigiPal/config.py",
+      "unused_imports": 

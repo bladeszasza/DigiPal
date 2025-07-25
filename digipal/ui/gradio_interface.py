@@ -1781,25 +1781,92 @@ class GradioInterface:
         """
     
     def launch_interface(self, share: bool = False, server_name: str = "127.0.0.1", 
-                        server_port: int = 7860, debug: bool = False) -> None:
+                        server_port: int = 7860, debug: bool = False,
+                        ssl_keyfile: Optional[str] = None, ssl_certfile: Optional[str] = None) -> None:
         """
-        Launch the Gradio interface.
+        Launch the Gradio interface with health check endpoints.
         
         Args:
             share: Whether to create a public link
             server_name: Server hostname
             server_port: Server port
             debug: Enable debug mode
+            ssl_keyfile: SSL key file path
+            ssl_certfile: SSL certificate file path
         """
         if not self.app:
             self.app = self.create_interface()
         
+        # Add health check endpoints
+        self._add_health_endpoints()
+        
         logger.info(f"Launching DigiPal interface on {server_name}:{server_port}")
         
-        self.app.launch(
-            share=share,
-            server_name=server_name,
-            server_port=server_port,
-            debug=debug,
-            show_error=True
-        )
+        # Launch configuration
+        launch_kwargs = {
+            'share': share,
+            'server_name': server_name,
+            'server_port': server_port,
+            'debug': debug,
+            'show_error': True
+        }
+        
+        # Add SSL configuration if provided
+        if ssl_keyfile and ssl_certfile:
+            launch_kwargs.update({
+                'ssl_keyfile': ssl_keyfile,
+                'ssl_certfile': ssl_certfile
+            })
+        
+        self.app.launch(**launch_kwargs)
+    
+    def _add_health_endpoints(self):
+        """Add health check and metrics endpoints to the Gradio app."""
+        try:
+            from ..monitoring import health_checker, get_metrics
+            import json
+            import time
+            
+            # Health check endpoint
+            def health_check_handler():
+                """Handle health check requests."""
+                try:
+                    health_status = health_checker.get_health_status()
+                    return {
+                        "status": health_status["status"],
+                        "timestamp": health_status["timestamp"],
+                        "checks": health_status["checks"],
+                        "version": "0.1.0",
+                        "environment": getattr(self, 'env', 'unknown')
+                    }
+                except Exception as e:
+                    logger.error(f"Health check failed: {e}")
+                    return {
+                        "status": "error",
+                        "message": str(e),
+                        "timestamp": time.time()
+                    }
+            
+            # Metrics endpoint
+            def metrics_handler():
+                """Handle metrics requests."""
+                try:
+                    return get_metrics()
+                except Exception as e:
+                    logger.error(f"Metrics endpoint failed: {e}")
+                    return f"# Error: {e}"
+            
+            # Add custom routes if Gradio supports it
+            # Note: This is a simplified approach - in production you might want
+            # to use a proper web framework like FastAPI alongside Gradio
+            if hasattr(self.app, 'add_route'):
+                self.app.add_route('/health', health_check_handler, methods=['GET'])
+                self.app.add_route('/metrics', metrics_handler, methods=['GET'])
+            else:
+                # Fallback: log that endpoints couldn't be added
+                logger.warning("Could not add health endpoints - Gradio version may not support custom routes")
+                
+        except ImportError:
+            logger.warning("Monitoring module not available - health endpoints disabled")
+        except Exception as e:
+            logger.error(f"Failed to add health endpoints: {e}")
